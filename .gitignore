@@ -1,0 +1,26 @@
+### Git should ignore the following files:
+
+# Stored Organisation Data
+recent.mdb
+myob_records_data.yml
+myob_categories_map.yml
+myob_records_md5.yml
+/stored_data
+
+# Config (incld. passwords)
+config*.yml
+config_backup.yml
+
+# Logs
+/*.log*
+
+# Testing
+test_product_uploading.rb
+test_func.rb
+.autotest
+run_spec.bat
+/spec_reports
+
+# Development and Resource Folders
+/dev_resources
+/categories_research

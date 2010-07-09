@@ -1,0 +1,6 @@
+h1. Global Handicrafts MYOB -> Spree Synchronization Script
+
+* This script aims to synchronize the stock and category data from MYOB Retail Manager with an online store built with Spree.
+* Includes rspec tests.
+* Must be used in conjunction with Spree 'product sync' extension.
+** (Provides a RESTful product and taxon API.)
