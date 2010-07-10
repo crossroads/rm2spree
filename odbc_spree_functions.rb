@@ -1,15 +1,15 @@
 require "rubygems"
 gem "dbd-odbc"
-require "DBI"
+require 'dbi'
 require 'digest/md5'
 require 'logger'
 require 'pp' 
 require 'multipart_upload'
-require 'ruby-debug'
 require "activeresource"
 require "activesupport"
 require 'net/http'
-require 'smtp_tls'
+require 'net/smtp'
+require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
 
 server_env = ARGV[0]
@@ -408,12 +408,10 @@ def update_spree_product(stock_id, stock_records_new, stock_records_old)
     $LOG.debug_x("Updating product in web-store with stock_id: #{stock_id}")
     update_product = Product_Sync.find_by_stock_id(stock_id)
     product_data = get_product_data(stock_id, stock_records_new)
-    
     cat_id = find_category_by_stockid(stock_id)[:sub_cat]
     dept_id = stock_records_new[stock_id]["dept_id"]
     taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_id)
     product_data["taxon_id"] = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
-
     if update_product == nil
         $LOG.error_x(":: Error: Product could not be found in Spree database. [stock_id = #{stock_id}]")
         return false
