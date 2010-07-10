@@ -5,13 +5,13 @@ table_name: Stock
 yaml_records_filename: stored_data\myob_records_data.yml
 md5_records_filename: stored_data\myob_records_md5.yml
 categories_filename: stored_data\categories_data.yml
-spree_baseurl: [URL OF SPREE SITE]
+spree_baseurl: http://localhost:3000/
 images_folder: [MYOB PRODUCT IMAGES FOLDER]
 only_images: true
 
 ## Spree web-store admin username and password
-spree_user: [SPREE USER EMAIL ADDRESS]
-spree_password: [SPREE PASSWORD]
+spree_user: spree@example.com
+spree_password: spree
 
 ## For sending error notification emails
 enable_emails: true
