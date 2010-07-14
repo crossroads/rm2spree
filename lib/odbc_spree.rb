@@ -15,7 +15,8 @@ require 'find'
 module Spree
   module ODBC
     class RM
-      attr_accessor :spree_baseurl,
+      attr_accessor :log,
+                    :spree_baseurl,
                     :categories_current,
                     :categories_old,
                     :md5_hash_current,
