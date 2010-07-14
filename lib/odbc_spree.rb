@@ -454,23 +454,23 @@ and corresponding products might need to be updated.",
 
                 if taxon_id = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
                   new_product_data["taxon_id"] = taxon_id
+                  if new_product_data["weight"] != nil    # Only add products that have feasible weights.
+                    if new_product = add_spree_product(new_product_data)    # if the function returns true...
+                      action_count[:new] += 1
+                      if image_path # If there is an image for the new product, then upload it to the web-store.
+                        if upload_image(image_path, new_product.permalink)
+                          action_count[:image] += 1
+                        end
+                      else
+                        @log.debug("  - Product did not have an image. Not uploaded.")
+                      end
+                    else                                        # otherwise if 'add_spree_product' function returns false
+                      action_count[:error] += 1
+                    end
+                  end
                 else  #else if taxon_id = nil
                   @log.error(":: Error: Taxon ID could not be found.")
-                end
-
-                if new_product_data["weight"] != nil    # Only add products that have feasible weights.
-                  if new_product = add_spree_product(new_product_data)    # if the function returns true...
-                    action_count[:new] += 1
-                    if image_path # If there is an image for the new product, then upload it to the web-store.
-                      if upload_image(image_path, new_product.permalink)
-                        action_count[:image] += 1
-                      end
-                    else
-                      @log.debug("  - Product did not have an image. Not uploaded.")
-                    end
-                  else                                        # otherwise if 'add_spree_product' function returns fals
-                    action_count[:error] += 1
-                  end
+                  action_count[:error] += 1
                 end
               else
                 action_count[:ignore_image] += 1
