@@ -53,7 +53,7 @@ category_changes[:cat1].each { |id, action|
 
 # Sends a get request to the server,
 # to trigger the 'translate taxons' method.
-Taxon_Sync.find("translate")
+TaxonSync.find("translate")
 
 
 # Fire off an error_email if there are any errors.
