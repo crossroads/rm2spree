@@ -584,8 +584,8 @@ and corresponding products might need to be updated.",
 	        update_product.save
 	        return update_product
 	      end
-	      rescue
-		      @log.error(":: Error: There was an error while updating product in Spree database.")
+	      rescue StandardError => e
+		      @log.error(":: Error: There was an error while updating product in Spree database: \n#{e}")
 		      return false
       end
 
@@ -595,8 +595,8 @@ and corresponding products might need to be updated.",
         delete_product.deleted_at = Time.now
         delete_product.save
         true
-        rescue
-          @log.error(":: Error: There was an error while deleting product from Spree database.")
+        rescue StandardError => e
+          @log.error(":: Error: There was an error while deleting product from Spree database: \n#{e}")
           false
       end
 
@@ -620,9 +620,9 @@ and corresponding products might need to be updated.",
 
         return new_taxon
 
-        rescue
+        rescue StandardError => e
           if new_taxon.errors.errors          # If there was an error while uploading the product...
-            @log.error(":: Error: Taxon could not be added to spree app.")
+            @log.error(":: Error: Taxon could not be added to spree app: \n#{e}")
           end
           return false
       end
@@ -636,8 +636,8 @@ and corresponding products might need to be updated.",
         m.post(url_string, "image/jpeg", @spree_user, @spree_password)
         @log.debug("  - Image was successfully uploaded!")
         return true
-        rescue
-          @log.error(":: Error: Product image could not be uploaded.")
+        rescue StandardError => e
+          @log.error(":: Error: Product image could not be uploaded: \n#{e}")
           return false
       end
 
@@ -688,7 +688,8 @@ and corresponding products might need to be updated.",
           @log.debug("  - Error report email sent.")
           return message
         end
-        rescue
+        rescue StandardError => e
+          @log.error(":: Error report email could not be sent: \n#{e}")
           return false
       end
 
