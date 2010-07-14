@@ -82,6 +82,8 @@ module Spree
             File.delete(path) if File.exist?(path)
           end
         end
+
+        connect if env == "test"  # (fake ODBC connection if test mode.)
       end
 
       def logger
@@ -757,3 +759,4 @@ class MockLogger
     puts message
   end
 end
+
