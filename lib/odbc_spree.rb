@@ -97,6 +97,12 @@ module ODBC
         @log.debug("===== Wrote YAML file: \"#{filename}\".")
       end
 
+      def save_current_data_to_files
+        write_yaml_to_file(@md5_records_filename, @md5_hash_current)
+        write_yaml_to_file(@yaml_records_filename, @stock_records_current)
+        write_yaml_to_file(@categories_filename, @categories_current)
+      end
+
       #-------------------------------------------------------
       #                   ODBC Data Retrieval
       #-------------------------------------------------------
@@ -399,6 +405,67 @@ and corresponding products might need to be updated.",
         end
       end
 
+      def process_stock_change(stock_id, stock_action, action_count)
+        # Unless there is at least one record matching the stock_id, ignore the entire stock_action.
+        if @stock_records_old[stock_id] || @stock_records_current[stock_id]
+
+          web_store_current = @stock_records_current[stock_id]["custom1"].downcase.strip     # .downcase the value, because it could be
+          web_store_old = @stock_records_old[stock_id]["custom1"].downcase.strip                 # either "Yes" or "yes"
+          stock_action = evaluate_stock_action_with_webstore(stock_action,
+                                                             web_store_old,
+                                                             web_store_current)
+
+          case stock_action
+            when :new                   # If the product is a new product to be added to the web-store
+              image_path = find_image(@stock_records_current[stock_id]["Barcode"])
+              if (Only_Images && image_path) || !Only_Images
+
+                cat_id = find_category_by_stockid(stock_id)[:sub_cat]
+                dept_id = @stock_records_current[stock_id]["dept_id"]
+                taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_id)
+                new_product_data = get_product_data(stock_id, @stock_records_current)
+
+                if taxon_id = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
+                  new_product_data["taxon_id"] = taxon_id
+                else  #else if taxon_id = nil
+                  @log.error(":: Error: Taxon ID could not be found.")
+                end
+
+                if new_product_data["weight"] != nil    # Only add products that have feasible weights.
+                  if new_product = add_spree_product(new_product_data)    # if the function returns true...
+                    action_count[:new] += 1
+                    if image_path # If there is an image for the new product, then upload it to the web-store.
+                      if upload_image(image_path, new_product.permalink)
+                        action_count[:image] += 1
+                      end
+                    else
+                      @log.debug("  - Product did not have an image. Not uploaded.")
+                    end
+                  else                                        # otherwise if 'add_spree_product' function returns fals
+                    action_count[:error] += 1
+                  end
+                end
+              else
+                action_count[:ignore_image] += 1
+              end
+            when :update          # If the product has already been added to the web-store but needs to be updated...
+              if update_spree_product(stock_id, @stock_records_current, @stock_records_old)
+                action_count[:update] += 1
+              else
+                action_count[:error] += 1
+              end
+            when :delete           # If the product has been added to the web-store but needs to be deleted
+              @log.debug("Deleting product from web-store with stock_id: #{stock_id}")
+              if delete_spree_product(stock_id)
+                action_count[:delete] += 1
+              else                                        # otherwise if the function returns false
+                action_count[:error] += 1
+              end
+            when nil
+              action_count[:ignore] += 1      # If there is an action to do ->
+          end
+        end
+      end
 
       #-------------------------------------------------------
       #                       Images / Other
