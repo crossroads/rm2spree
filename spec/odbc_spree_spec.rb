@@ -23,8 +23,8 @@ describe "File Operations (Saving YAML Data, etc.)" do
   it "should be able to find that a file doesnt exist and create the file with the given data." do
     filename = "foo.bar"
     sample_data = "this is some sample data to write if file doesnt exist."
-    @rm.load_file_with_defaults(filename, sample_data, {}).should == {}
-    @rm.load_file_with_defaults(filename, sample_data, true).should == sample_data
+    @rm.load_file_with_defaults(filename, {}).should == {}
+    @rm.load_file_with_defaults(filename, true).should == true
   end
 end
 
@@ -66,8 +66,15 @@ describe "Categories" do
 
   it "should be able to find the details and hierarchy for a given catvalue_id" do
     catvalue_id = 10
-    sample_categories_data = {:cat2 => sample_categories, :dept => sample_department_values}
-    @rm.find_category_details_by_catvalue_id(catvalue_id, sample_categories_data, sample_categorised_values).should == {:sub_cat=>10, :cat_name=>"DECOR", :dept_details=>{1 => "ACCESSORY", 3=>"CLOTHING"}}
+    sample_categories_data = {:cat1 => sample_categories, :dept => sample_department_values}
+    @rm.find_category_details_by_catvalue_id(
+      catvalue_id,
+      sample_categories_data,
+      sample_categorised_values).should == {:sub_cat => 10,
+                                            :cat_name => "DECOR",
+                                            :dept_details =>
+                                              {1 => "ACCESSORY",
+                                               3 => "CLOTHING"}}
   end
 end
 
@@ -122,20 +129,20 @@ end
 
 describe "Spree Active Resource Connection" do
   before :all do   # stub out the product and TaxonSync classes so they dont actually call the spree API
-    Product = stub("Product")
+    Taxon = stub("Taxon")
+
     Product.stubs(:attributes).returns(sample_spree_record)
     Product.stubs(:valid?).returns(true)
     Product.stubs(:deleted_at=).returns(Time.now)
     Product.stubs(:save).returns(true)
     Product.stubs(:permalink).returns("test_product")
 
-    Taxon = stub("Taxon")
-    Taxon.stubs(:save).returns(true)
     stub_dbi
     @rm = RM.new("test")
   end
 
   before :each do
+    Taxon.stubs(:save).returns(true)
     ProductSync.stub!(:find).and_return([Product])
     ProductSync.stub!(:new).and_return(Product)
     TaxonSync.stub!(:find).and_return(true)
@@ -161,12 +168,13 @@ describe "Spree Active Resource Connection" do
   end
 
   it "should be able to update a product in the Spree database" do
-    ProductSync.should_receive(:find_by_stock_id).with(1).and_return(mock(Product))
+    ProductSync.should_receive(:find_by_stock_id).with(1).and_return(Product)
+
+    Product.stubs(:attributes).returns(sample_spree_record)
     stub!(:upload_image).and_return(true)
-    @spree_taxons = []
-    @spree_taxonomies = []
-    stock_id = 1
-    @rm.update_spree_product(stock_id, sample_stock_record, sample_stock_record).should_not == false
+    @rm.spree_taxons = []
+    @rm.spree_taxonomies = []
+    @rm.update_spree_product(1, sample_stock_record, sample_stock_record).should_not == false
   end
 
   it "should be able to delete a product from the Spree database" do

@@ -1,19 +1,8 @@
 require 'rubygems'
 require 'mocha'
-require 'odbc_spree_functions.rb'
-require 'ruby-debug'
 
-class Logger                    # Overwrite the logger class so that it only *displays* messages, and doesnt write them to log file.
-  def info_x(message)
-    puts message
-  end
-  def debug_x(message)
-    #puts message
-  end
-  def error_x(message)
-    puts message
-  end
-end
+require File.join('lib', 'odbc_spree.rb')
+require 'ruby-debug'
 
 class Multipart                 # Overwrite the 'Multipart' code so that it doesnt actually post with net/http
   def post(to_url, content_type, user, password)
@@ -24,7 +13,7 @@ end
 class MockSMTP
   def enable_starttls
   end
-  
+
   def start(helo, user, pass, login_type)
   end
 end
@@ -37,14 +26,16 @@ class MockODBCConnection
     return sample_categorised_values if sql_string=~ /\"CategorisedValues\"/
     return sample_odbc_department_values if sql_string=~ /\"Departments\"/
   end
-  
+
   def columns(table_name)
     sample_stock_fields
   end
-  
+
   def disconnect
   end
 end
+
+class Product; end
 
 # Credit to http://robots.thoughtbot.com/post/159809120/activeresource-and-testing
 # Some ActiveResource requests append these empty parameters, in any order,
@@ -85,7 +76,7 @@ def sample_categories
   7=>"WALLET",
   2=>"BELT",
   8=>"CANDLE",
-  3=>"HAIR", 
+  3=>"HAIR",
   9=>"CHOC",
   4=>"HAT",
   10=>"DECOR"}
@@ -114,7 +105,7 @@ def sample_odbc_stock
   "multi colour w/overlap<br /><br />Want to know more about who made this item? Click <a href=\"http://globalhandicrafts.org/Producers/Bread_of_Life/\" target=\"_blank\"> here</a>.",
   "ACCESS", "BAG", "N-T", 38.2, "N-T", 75.0,
   "0.0", "0.0", "0.0", "Thu, 06 Mar 2008 22:56:09 +0000", "0", "0", "0", "0.0", "0.0", 9, "Tue, 16 Dec 2008 16:26:10 +0000",
-  "0", "0.0", false, "0", "0", ""], 
+  "0", "0.0", false, "0", "0", ""],
   ["2.0", 1, "SMBL6134", 0, "yes", "", "", "0", "0", "0", "0", "0", "0", "Bag - woven multi colour", "Woven multi colour<br /><br />Want to know more about who made this item? Click <a href=\"http://globalhandicrafts.org/Producers/Bread_of_Life/\" target=\"_blank\"> here</a>.",
   "ACCESS", "BAG", "N-T", "65.4", "N-T", "130.0", "0.0", "0.0", "0.0", "Thu, 06 Mar 2008 22:56:09 +0000", "0",
   "0", 0.0, "0.0", "0.0", 9, "Tue, 16 Dec 2008 16:26:41 +0000", "0", "0.0", false, "0", "0", ""],
@@ -134,7 +125,7 @@ def sample_stock_fields
   "supplier_id", "date_modified", "freight", "tare_weight", "unitof_measure",
   "weighted", "external", "picture_file_name"].each do |key|
       fields_array << {:name => key}
-  end  
+  end
   fields_array
 end
 
@@ -203,4 +194,9 @@ def get_random_webstore_stock_id
   return $current_stock_records[key]["stock_id"].to_i
 end
 
-$LOG = Logger.new("ghicrafts_odbc_export.log", 10, 1024000)
+
+def stub_dbi
+    # Never connect to a real odbc datasource.
+    DBI.stub!(:connect).and_return(MockODBCConnection.new)
+end
+
