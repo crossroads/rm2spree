@@ -65,6 +65,13 @@ module Spree
         @md5_records_filename.gsub!(".yml", "_#{env}.yml")
         @categories_filename.gsub!(".yml", "_#{env}.yml")
 
+        # Set site, user and password for each Active Resource class.
+        [ProductSync, TaxonSync, TaxonomySync].each { |api|
+          api.site = @spree_baseurl
+          api.user = @spree_user
+          api.password = @spree_password
+        }
+
         @log = logger
 
         # Clear all old saved data if we are bootstrapping
@@ -697,11 +704,10 @@ and corresponding products might need to be updated.",
   end
 end
 
+
 # --------- Set up ActiveResource classes
 
-$rm = Spree::ODBC::RM.new("config")
 class ProductSync < ActiveResource::Base
-  self.site = $rm.spree_baseurl
   def self.find_by_stock_id(stock_id)
     self.find(:all).each { |product|
       if meta_desc = product.attributes["meta_description"]
@@ -711,21 +717,10 @@ class ProductSync < ActiveResource::Base
     nil
   end
 end
-class TaxonSync < ActiveResource::Base
-  self.site = $rm.spree_baseurl
-end
-class TaxonomySync < ActiveResource::Base
-  self.site = $rm.spree_baseurl
-end
-# Set user and password for each Active Resource class.
-[ProductSync, TaxonSync, TaxonomySync].each { |api|
-  api.user = @spree_user
-  api.password = @spree_password
-}
-
+class TaxonSync < ActiveResource::Base; end
+class TaxonomySync < ActiveResource::Base; end
 
 # --------- Patches for various classes
-
 
 class Array   # Defines a method on arrays to search for a taxonomy by its dept_id field.
   def find_taxonomy_id_by_dept(dept_id)
