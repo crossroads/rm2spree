@@ -8,8 +8,7 @@ myob_records_md5.yml
 /stored_data
 
 # Config (incld. passwords)
-config*.yml
-config_backup.yml
+config/config*.yml
 
 # Logs
 log/*.log*
@@ -24,3 +23,4 @@ run_spec.bat
 # Development and Resource Folders
 /dev_resources
 /categories_research
+
