@@ -5,9 +5,7 @@
 #
 #       spec -O spec/spec.opts odbc_spree_functions_spec.rb
 ARGV[0] = "local"
-require 'odbc_spree_functions.rb'
 require 'spec_helper.rb'
-
 
 describe "File Operations (Saving YAML Data, etc.)" do
   before :each do  # stub out file class so it doesnt read or write.
@@ -66,7 +64,7 @@ describe "Categories" do
 end
 
 describe "Emails" do
-  before :each do   # stub out the ODBC connection so it returns certain sample data-sets for certain SQL queries.
+  before :each do
     Net::SMTP.stub!(:new).and_return(MockSMTP.new)
   end
   
@@ -145,6 +143,8 @@ describe "Spree Active Resource Connection" do
   end
   
   it "should be able to update a product in the Spree database" do
+    Product_Sync.should_receive(:find_by_stock_id).with(1).and_return(mock(Product))
+    stub!(:upload_image).and_return(true)
     @spree_taxons = []
     @spree_taxonomies = []
     stock_id = 1

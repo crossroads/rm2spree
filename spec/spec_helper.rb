@@ -1,4 +1,6 @@
+require 'rubygems'
 require 'mocha'
+require 'odbc_spree_functions.rb'
 
 class Logger                    # Overwrite the logger class so that it only *displays* messages, and doesnt write them to log file.
   def info_x(message)
@@ -42,6 +44,19 @@ class MockODBCConnection
   def disconnect
   end
 end
+
+# Credit to http://robots.thoughtbot.com/post/159809120/activeresource-and-testing
+# Some ActiveResource requests append these empty parameters, in any order,
+# and you can't seem to use regexps with HttpMock right now.
+#~ ActiveResource::HttpMock.respond_to do |mock|
+  #~ mock.get "/product_sync/1", {}, user(:eric)
+  #~ mock.get "/tools/1/users/2.xml?include=&conditions=", {}, user(:eric)
+  #~ mock.get "/tools/1/users/2.xml?conditions=&include=", {}, user(:eric)
+  #~ mock.get "/tools/1/users/3.xml", {}, user(:matt)
+  #~ mock.get "/tools/1/users/4.xml", {}, user(:paper)
+  #~ mock.get "/tools/1/users/0.xml", {}, nil, 404
+  #~ mock.get "/tools/1/users/.xml", {}, nil, 404
+#~ end
 
 def sample_categorised_values
   [[1, 2, 19], [3, 2, 19],[1, 2, 10], [3, 2, 10]]

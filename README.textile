@@ -4,3 +4,39 @@ h1. Global Handicrafts MYOB -> Spree Synchronization Script
 * Includes rspec tests.
 * Must be used in conjunction with Spree 'product sync' extension.
 ** (Provides a RESTful product and taxon API.)
+
+h2. Installation instructions
+
+h3. Install dependencies
+
+<pre>
+gem install dbd-odbc --version="0.2.5"
+gem install dbi --version="0.4.5"
+gem install activeresource --version="2.3.5"
+</pre>
+
+h3. Install the script
+
+<pre>
+git clone git://github.com/crossroads/rm2spree.git
+</pre>
+
+h3. Setup the configuration files
+
+<pre>
+cp config/config.yml.sample config/config_local.yml
+</pre>
+
+Edit the configuration file to setup the correct parameters:
+
+* URL to spree site
+* Spree login username
+* Spree password
+
+h3. Run tests
+
+<pre>
+gem install rspec --version="1.3.0"
+spec spec/
+</pre>
+
