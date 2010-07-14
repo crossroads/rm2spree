@@ -12,8 +12,11 @@ require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
 
-server_env = ARGV[0]
 $bootstrap = ARGV[1]
+
+
+server_env = ARGV[0]
+
 
 if not ["local", "preview", "beta", "live"].include? server_env
   puts "Wrong server environment argument. Should be 'local', 'preview', 'beta', or 'live'."
@@ -93,7 +96,7 @@ class Taxon_Sync < ActiveResource::Base
 end
 
 class Taxonomy_Sync < ActiveResource::Base
-  self.site = Spree_BaseURL
+self.site = Spree_BaseURL
 end
 
 [Product_Sync, Taxon_Sync, Taxonomy_Sync].each { |spree_api|      # Set user and password for each Active Resource class.
@@ -267,7 +270,7 @@ def fetch_categories(table = "CategoryValues")
     #~ )
   #~ })
   
-  category_data = access_db.select_all('SELECT * FROM "CategoryValues" ')
+  category_data = access_db.select_all("SELECT * FROM \"#{table}\"")
   
     category_hash = {}
     category_data.each { |category|
@@ -292,9 +295,9 @@ end
 
 
 def fetch_categorised_values
-  begin         # Department ID = Main category    # Category level 1 = ignore    # Category level 2 = sub-cat    # Category level 3 = ignore
+  begin         # Department ID = Main category    # Category level 1 = sub-cat  # Category level 2 = ignore  # Category level 3 = ignore
     access_db = odbc_datasource(Datasource_Name)
-    categorised_values = access_db.select_all("SELECT * FROM \"CategorisedValues\" WHERE \"cat_id\" = 2")
+    categorised_values = access_db.select_all("SELECT * FROM \"CategorisedValues\" WHERE \"cat_id\" = 1")
   rescue DBI::InterfaceError => e
     $LOG.error_x(%Q":: An error occurred: 
    #{e}")
@@ -415,35 +418,35 @@ end
 
 
 def update_spree_product(stock_id, stock_records_new, stock_records_old)
-  begin
-    $LOG.debug_x("Updating product in web-store with stock_id: #{stock_id}")
-    update_product = Product_Sync.find_by_stock_id(stock_id)
-    product_data = get_product_data(stock_id, stock_records_new)
-    cat_id = find_category_by_stockid(stock_id)[:sub_cat]
-    dept_id = stock_records_new[stock_id]["dept_id"]
-    taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_id)
-    product_data["taxon_id"] = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
-    if update_product == nil
-        $LOG.error_x(":: Error: Product could not be found in Spree database. [stock_id = #{stock_id}]")
-        return false
-    else
-      if image_field(stock_id, stock_records_new) != image_field(stock_id, stock_records_old)
-        upload_image(image_field(stock_id, stock_records_new), update_product.attributes["permalink"])    # Upload image if it has changed.
-      end
-      if quantity_field(stock_id, stock_records_old) > 0 && quantity_field(stock_id, stock_records_new) == 0  # If quantity was greater than 0 and is now 0 ->
-        update_product.deleted_at = Time.now   # Set 'deleted_at' to Time.now
-      end
-      if quantity_field(stock_id, stock_records_old) == 0 && quantity_field(stock_id, stock_records_new) > 0  # If quantity was 0 and is now greater than 0 ->
-        update_product.deleted_at = nil    # Set 'deleted_at' to nil
-      end      
-      update_product.attributes.merge!(product_data)  # Overwrite product data with new values.
-      update_product.save
-      return update_product
-    end
-  rescue
-    $LOG.error_x(":: Error: There was an error while updating product in Spree database.")
-    return false
-  end
+	$LOG.debug_x("Updating product in web-store with stock_id: #{stock_id}")
+	update_product = Product_Sync.find_by_stock_id(stock_id)
+	product_data = get_product_data(stock_id, stock_records_new)
+	cat_id = find_category_by_stockid(stock_id)[:sub_cat]
+	dept_id = stock_records_new[stock_id]["dept_id"]
+	taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_id)
+	product_data["taxon_id"] = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
+	if update_product == nil
+		$LOG.error_x(":: Error: Product could not be found in Spree database. [stock_id = #{stock_id}]")
+		return false
+	else
+		# Upload image if it has changed from 'not existing' to 'existing'.
+	  if image_field(stock_id, stock_records_new) != image_field(stock_id, stock_records_old)
+		image_path = find_image(@stock_records_current[stock_id]["Barcode"])
+		upload_image(image_path, update_product.attributes["permalink"])    
+	  end
+	  if quantity_field(stock_id, stock_records_old) > 0 && quantity_field(stock_id, stock_records_new) == 0  # If quantity was greater than 0 and is now 0 ->
+		update_product.deleted_at = Time.now   # Set 'deleted_at' to Time.now
+	  end
+	  if quantity_field(stock_id, stock_records_old) == 0 && quantity_field(stock_id, stock_records_new) > 0  # If quantity was 0 and is now greater than 0 ->
+		update_product.deleted_at = nil    # Set 'deleted_at' to nil
+	  end      
+	  update_product.attributes.merge!(product_data)  # Overwrite product data with new values.
+	  update_product.save
+	  return update_product
+	end
+	rescue
+		$LOG.error_x(":: Error: There was an error while updating product in Spree database.")
+		return false
 end
 
 
