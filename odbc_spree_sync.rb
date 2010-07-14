@@ -1,4 +1,4 @@
-require "odbc_spree_functions"
+require File.join("lib", "odbc_spree")
 
 Start_Time = Time.now
 $LOG = Logger.new("odbc_export.log", 10, 1024000)
@@ -13,6 +13,10 @@ $LOG.debug_x("\n\n -=- MYOB Database Synchronization Script started. -=- \n")
 @categories_current[:cat1] = fetch_categories
 @categorised_values = fetch_categorised_values
 @stock_records_current = fetch_stock_records
+
+# MYOB contains no information about images. We need to inject the image data (+ timestamp) into a mock column.
+inject_image_data(@stock_records_current)
+
 @md5_hash_current = get_md5_hashes(@stock_records_current)
 
 # Clear all current data if we are (re)bootstrapping

@@ -12,8 +12,11 @@ require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
 
-server_env = ARGV[0]
 $bootstrap = ARGV[1]
+
+
+server_env = ARGV[0]
+
 
 if not ["local", "preview", "beta", "live"].include? server_env
   puts "Wrong server environment argument. Should be 'local', 'preview', 'beta', or 'live'."
@@ -93,7 +96,7 @@ class Taxon_Sync < ActiveResource::Base
 end
 
 class Taxonomy_Sync < ActiveResource::Base
-  self.site = Spree_BaseURL
+self.site = Spree_BaseURL
 end
 
 [Product_Sync, Taxon_Sync, Taxonomy_Sync].each { |spree_api|      # Set user and password for each Active Resource class.

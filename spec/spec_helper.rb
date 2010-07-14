@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'mocha'
 require 'odbc_spree_functions.rb'
+require 'ruby-debug'
 
 class Logger                    # Overwrite the logger class so that it only *displays* messages, and doesnt write them to log file.
   def info_x(message)
