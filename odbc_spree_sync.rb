@@ -55,6 +55,8 @@ category_changes[:cat1].each { |id, action|
 # to trigger the 'translate taxons' method.
 TaxonSync.find("translate")
 
+# Save the categories data.
+@rm.save_categories_data_to_files
 
 # Fire off an error_email if there are any errors.
 send_error_email(errors_for_email) if errors_for_email != {}
@@ -88,9 +90,9 @@ stock_changes.each do |stock_id, stock_action|
   @rm.process_stock_change(stock_id, stock_action, action_count)
 end
 
-# Update the saved record files to current data.
+# Update the saved stock record files to current data.
 @rm.log.debug("Saving updated records and MD5 hashes to disk...")
-@rm.save_current_data_to_files
+@rm.save_stock_data_to_files
 
 
 @rm.log.debug(%Q"

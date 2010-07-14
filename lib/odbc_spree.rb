@@ -121,9 +121,12 @@ module Spree
         @log.debug("===== Wrote YAML file: \"#{filename}\".")
       end
 
-      def save_current_data_to_files
+      def save_stock_data_to_files
         write_yaml_to_file(@md5_records_filename, @md5_hash_current)
         write_yaml_to_file(@yaml_records_filename, @stock_records_current)
+      end
+      
+      def save_categories_data_to_files
         write_yaml_to_file(@categories_filename, @categories_current)
       end
 
