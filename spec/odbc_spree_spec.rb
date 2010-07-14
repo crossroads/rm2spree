@@ -163,7 +163,7 @@ describe "Spree Active Resource Connection" do
 
   it "should be able to add a new product to the Spree database" do
     stock_id = 1
-    sample_product_data = {"name" => "Test Product", "description" => "Test Description"}
+    sample_product_data = {"name" => "Test Product", "description" => "Test Description", "taxon_id" => "123"}
     @rm.add_spree_product(sample_product_data).should_not == false
   end
 

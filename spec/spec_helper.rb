@@ -35,6 +35,20 @@ class MockODBCConnection
   end
 end
 
+# Mock logger to only display messages in terminal
+class MockLogger
+  def initialize(*args); end
+  def info(message)
+    #puts message
+  end
+  def debug(message)
+    #puts message
+  end
+  def error(message)
+    puts message
+  end
+end
+
 class Product; end
 
 # Credit to http://robots.thoughtbot.com/post/159809120/activeresource-and-testing

@@ -82,6 +82,8 @@ module Spree
             File.delete(path) if File.exist?(path)
           end
         end
+
+        connect if @env=="test"
       end
 
       def logger
@@ -125,7 +127,7 @@ module Spree
         write_yaml_to_file(@md5_records_filename, @md5_hash_current)
         write_yaml_to_file(@yaml_records_filename, @stock_records_current)
       end
-      
+
       def save_categories_data_to_files
         write_yaml_to_file(@categories_filename, @categories_current)
       end
@@ -745,17 +747,3 @@ class File
   end
 end
 
-
-# Mock logger to only display messages in terminal
-class MockLogger
-  def initialize(*args); end
-  def info(message)
-    #puts message
-  end
-  def debug(message)
-    #puts message
-  end
-  def error(message)
-    puts message
-  end
-end
