@@ -134,7 +134,7 @@ def changeable_fields(record)
     record_data = ""
     %w(cost freight order_threshold quantity inactive custom1 custom2 \
     weighted tare_weight picture_file_name order_quantity static_quantity \
-    cat2 longdesc description package supplier_id salesorder_qty layby_qty \
+    cat1 longdesc description package supplier_id salesorder_qty layby_qty \
     sell print_components bonus tax_components allow_renaming dept_id).each { |field|
       record_data += record[1][field].to_s
     }
@@ -257,7 +257,18 @@ def fetch_categories(table = "CategoryValues")
   begin
     # Create an ODBC datasource connection
     access_db = odbc_datasource(Datasource_Name)
-    category_data = access_db.select_all("SELECT * FROM \"#{table}\"")
+    #~ category_data = access_db.select_all(%Q{
+    #~ SELECT * FROM "CategoryValues" 
+    #~ WHERE EXISTS (
+      #~ SELECT * FROM "CategorisedStock" 
+      #~ INNER JOIN "Stock" ON "CategorisedStock".stock_id = "Stock".stock_id
+      #~ WHERE UCase(Trim("Stock".custom1)) = YES 
+        #~ AND "CategoryValues".catvalue_id = "CategorisedStock".catvalue_id
+    #~ )
+  #~ })
+  
+  category_data = access_db.select_all('SELECT * FROM "CategoryValues" ')
+  
     category_hash = {}
     category_data.each { |category|
       category_hash[category[0]] = category[2]
@@ -321,7 +332,7 @@ def find_category_details_by_catvalue_id(catvalue_id, categories, categorised_va
   category_maps.each { |category|
     dept_hash[category[0]] = categories[:dept][category[0]] if category[0] != 0    #Find department name from department id (if department isnt 0)
   }
-  category_details_hash = {:sub_cat=>catvalue_id, :cat_name=>categories[:cat2][catvalue_id], :dept_details=>dept_hash}
+  category_details_hash = {:sub_cat=>catvalue_id, :cat_name=>categories[:cat1][catvalue_id], :dept_details=>dept_hash}
   return category_details_hash
 end
 
@@ -375,7 +386,7 @@ def get_product_data(stock_id, stock_records)
   product_data = {}
   product_data["name"] = stock_records[stock_id]["description"]
   product_data["description"] = stock_records[stock_id]["longdesc"]
-  product_data["sku"] = stock_records[stock_id]["Barcode"]
+  product_data["sku"] = stock_records[stock_id]["Barcode"].strip
   product_data["price"] = stock_records[stock_id]["sell"]
   product_data["available_on"]  = 1.day.ago
   product_data["meta_description"]  = "stock_id=#{stock_id}"

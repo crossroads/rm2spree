@@ -10,7 +10,7 @@ $LOG.debug_x("\n\n -=- MYOB Database Synchronization Script started. -=- \n")
 
 @categories_current = {}
 @categories_current[:dept] = fetch_departments
-@categories_current[:cat2] = fetch_categories
+@categories_current[:cat1] = fetch_categories
 @categorised_values = fetch_categorised_values
 @stock_records_current = fetch_stock_records
 @md5_hash_current = get_md5_hashes(@stock_records_current)
@@ -23,7 +23,7 @@ if $bootstrap
 end
 
 
-@categories_old = write_or_load_data_if_file_exists(Categories_Data_Filename, @categories_current, {:dept => {}, :cat2 => {}})
+@categories_old = write_or_load_data_if_file_exists(Categories_Data_Filename, @categories_current, {:dept => {}, :cat1 => {}})
 @stock_records_old =  write_or_load_data_if_file_exists(YAML_Records_Filename, @stock_records_current, true)
 @md5_hash_old = write_or_load_data_if_file_exists(MD5_Records_Filename, @md5_hash_current, {})
 
@@ -32,7 +32,7 @@ $LOG.debug_x("\n -=- Script has run for the first time. Uploading all product da
 $LOG.debug_x("== Scanning for Department changes ...")
 department_changes = {:dept => compare_tables(@categories_current[:dept], @categories_old[:dept])}
 $LOG.debug_x("== Scanning for Category changes ...")
-category_changes = {:cat2 => compare_tables(@categories_current[:cat2], @categories_old[:cat2])}
+category_changes = {:cat1 => compare_tables(@categories_current[:cat1], @categories_old[:cat1])}
 $LOG.debug_x("== Scanning for Stock changes ...")
 stock_changes = compare_tables(@md5_hash_current, @md5_hash_old)
 
@@ -62,9 +62,9 @@ errors_for_email = []
 #~ ")
 
 
-[:dept, :cat2].each do |cat_type|               # Update departments first, and THEN second level categories.
+[:dept, :cat1].each do |cat_type|               # Update departments first, and THEN second level categories.
   
-  @spree_taxonomies = Taxonomy_Sync.find(:all) if cat_type == :cat2
+  @spree_taxonomies = Taxonomy_Sync.find(:all) if cat_type == :cat1
   
   if category_changes[cat_type].size > 0
     category_changes[cat_type].each { |id, action|     # If there were any category changes, push them to Spree.
@@ -85,14 +85,14 @@ errors_for_email = []
                              :previous_state => @categories_old[:dept][id],
                              :new_state => "## DELETED"}
           end
-        when :cat2
+        when :cat1
             # Fetch all taxonomies from Spree.
             case action
               
               when :update    # Ignore string value updates. We only care about category ids being added or deleted.
                 errors_for_email[id] = {:message => "A category name has been updated. It might need to be also renamed on the web-store.",
-                                             :previous_state => @categories_old[:cat2][id],
-                                             :new_state => @categories_curent[:cat2][id]}            
+                                             :previous_state => @categories_old[:cat1][id],
+                                             :new_state => @categories_curent[:cat1][id]}            
               when :new
                 category_details = find_category_details_by_catvalue_id(id, @categories_current, @categorised_values)
                   # Reasons to not add a category : its name is "<N/A>", or it belongs to no departments.
@@ -108,7 +108,7 @@ errors_for_email = []
                   end
               when :delete    # Dont touch Spree, just send an email to notify administrator of change.
                 errors_for_email[id] = {:message => "A category has been deleted. It might need to be removed from the webstore, and corresponding products might need to be updated.",
-                               :previous_state => @categories_old[:cat2][id],
+                               :previous_state => @categories_old[:cat1][id],
                                :new_state => "## DELETED"}
               end
           Taxon_Sync.find("translate")  # Sends a get request to the server, which triggers the 'translate taxons' method.
