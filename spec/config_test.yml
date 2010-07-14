@@ -1,0 +1,24 @@
+## config.yml
+## Configuration of MYOB RM -> Spree webstore sync script
+datasource_name: [MYOB ODBC DATASOURCE NAME]
+table_name: Stock
+yaml_records_filename: stored_data\myob_records_data.yml
+md5_records_filename: stored_data\myob_records_md5.yml
+categories_filename: stored_data\categories_data.yml
+spree_baseurl: "http://localhost:3000/"
+images_folder: [MYOB PRODUCT IMAGES FOLDER]
+only_images: true
+
+## Spree web-store admin username and password
+spree_user: spree@example.com
+spree_password: spree
+
+## For sending error notification emails
+enable_emails: true
+email_server: [SMTP SERVER]
+email_user: [SMTP USER/EMAIL]
+email_password: [SMTP PASSWORD]
+email_port: [SMTP PORT]
+email_helo_domain: [HELO DOMAIN]
+email_to: [SEND EMAILS TO THIS ADDRESS]
+
