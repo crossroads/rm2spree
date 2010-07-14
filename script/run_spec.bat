@@ -1,0 +1,1 @@
+spec -O spec/spec.opts spec/

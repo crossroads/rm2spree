@@ -17,7 +17,6 @@ log/*.log*
 test_product_uploading.rb
 test_func.rb
 .autotest
-run_spec.bat
 /spec_reports
 
 # Development and Resource Folders
