@@ -2,7 +2,7 @@
 
 require File.join("lib", "odbc_spree")
 
-include ODBC::Spree
+include Spree::ODBC
 
 env, bootstrap = ARGV[0], ARGV[1]
 

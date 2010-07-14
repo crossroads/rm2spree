@@ -12,8 +12,8 @@ require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
 
-module ODBC
-  module Spree
+module Spree
+  module ODBC
     class RM
       attr_accessor :spree_baseurl,
                     :categories_current,
@@ -678,7 +678,7 @@ end
 
 # --------- Set up ActiveResource classes
 
-$rm = ODBC::Spree::RM.new("config")
+$rm = Spree::ODBC::RM.new("config")
 class ProductSync < ActiveResource::Base
   self.site = $rm.spree_baseurl
   def self.find_by_stock_id(stock_id)

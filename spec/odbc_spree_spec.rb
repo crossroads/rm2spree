@@ -7,7 +7,7 @@
 ARGV[0] = "local"
 require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 
-include ODBC::Spree
+include Spree::ODBC
 
 describe "File Operations (Saving YAML Data, etc.)" do
   before :all do
