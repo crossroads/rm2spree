@@ -82,8 +82,6 @@ module Spree
             File.delete(path) if File.exist?(path)
           end
         end
-
-        connect if env == "test"  # (fake ODBC connection if test mode.)
       end
 
       def logger
@@ -447,7 +445,7 @@ and corresponding products might need to be updated.",
           case stock_action
             when :new                   # If the product is a new product to be added to the web-store
               image_path = find_image(@stock_records_current[stock_id]["Barcode"])
-              if (Only_Images && image_path) || !Only_Images
+              if (@only_images && image_path) || !@only_images
 
                 cat_id = find_category_by_stockid(stock_id)[:sub_cat]
                 dept_id = @stock_records_current[stock_id]["dept_id"]
@@ -546,6 +544,8 @@ and corresponding products might need to be updated.",
 
 
       def add_spree_product(product_data)
+        # Cannot add a product without a taxon.
+        return false unless product_data["taxon_id"]
         # If it was previously deleted (unsure how to test this)  then  set 'deleted_at' flag to nil
         @log.debug("Adding new product to web-store with #{product_data["meta_description"]}")    # log the stock_id from metadesc...
         new_product = ProductSync.new(product_data)
@@ -640,7 +640,7 @@ and corresponding products might need to be updated.",
         @log.debug(%Q"Uploading image to [#{@spree_baseurl}]...
       - Image_file: #{image_file.split("\\").last}
       - Product_name: #{product_id}")
-        url_string = "#{@spree_baseurl}admin/products/#{product_id}/images"
+        url_string = "#{@spree_baseurl}/admin/products/#{product_id}/images"
         m = Multipart.new 'image[attachment]' => image_file
         m.post(url_string, "image/jpeg", @spree_user, @spree_password)
         @log.debug("  - Image was successfully uploaded!")
@@ -759,4 +759,3 @@ class MockLogger
     puts message
   end
 end
-
