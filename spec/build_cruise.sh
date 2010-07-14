@@ -10,8 +10,5 @@ if [ "$?" -eq "1" ]; then
   PASS_FAIL=1
 fi
 
-# clean up builds older than 2 weeks ago so we don't run out of space
-find -type d -name "build*" -mtime +14 -exec rm -rf \{} \;
-
 exit $PASS_FAIL
 
