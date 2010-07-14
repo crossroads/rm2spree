@@ -5,7 +5,7 @@
 #
 #       spec -O spec/spec.opts odbc_spree_functions_spec.rb
 ARGV[0] = "local"
-require 'spec_helper.rb'
+require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 
 describe "File Operations (Saving YAML Data, etc.)" do
   before :each do  # stub out file class so it doesnt read or write.
