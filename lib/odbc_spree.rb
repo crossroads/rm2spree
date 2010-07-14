@@ -12,7 +12,7 @@ require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
 
-Logger.class_eval
+Logger.class_eval do
   alias :log_info :info
   alias :log_debug :debug
   alias :log_error :error
