@@ -82,9 +82,6 @@ module Spree
             File.delete(path) if File.exist?(path)
           end
         end
-
-        # Connect to ODBC unless we are in 'config only' mode
-        initialize_access_db unless env == "config"
       end
 
       def logger
@@ -98,7 +95,7 @@ module Spree
         end
       end
 
-      def initialize_access_db
+      def connect
         # Initialize an ODBC datasource connection
         @access_db = odbc_datasource(@datasource_name)
       end

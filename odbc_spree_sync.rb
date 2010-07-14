@@ -18,6 +18,8 @@ start_time = Time.now
 
 # ------ Begin Code Execution -------
 
+@rm.connect
+
 @rm.fetch_current_data
 @rm.fetch_old_data
 
