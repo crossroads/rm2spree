@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require File.join("lib", "odbc_spree.rb")
+include Spree::ODBC
 
 @rm = RM.new("preview")
 

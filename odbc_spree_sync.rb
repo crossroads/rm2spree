@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require File.join("lib", "odbc_spree")
-
 include Spree::ODBC
 
 env, bootstrap = ARGV[0], ARGV[1]
