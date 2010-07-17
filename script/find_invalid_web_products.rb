@@ -4,6 +4,7 @@ require File.join("lib", "odbc_spree.rb")
 include Spree::ODBC
 
 @rm = RM.new("preview")
+@rm.connect
 
 @no_image = []
 @no_weight = []
@@ -11,8 +12,8 @@ include Spree::ODBC
 @stock_records_current = @rm.fetch_stock_records
 
 @stock_records_current.each do |stock_id, record|
-  if record["custom1"].downcase == "yes"
-      @no_image << record["Barcode"] unless find_image(record["Barcode"])
+  if record["custom1"].downcase.strip == "yes"
+      @no_image << record["Barcode"] unless @rm.find_image(record["Barcode"])
       @no_weight << record["Barcode"] unless (record["custom2"].to_f > 0 and record["custom2"].to_f < 10)
   end
 end
