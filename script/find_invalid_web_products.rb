@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require File.join("..", "lib", "odbc_spree.rb")
 
 @rm = RM.new("preview")
