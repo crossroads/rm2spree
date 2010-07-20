@@ -5,7 +5,7 @@ table_name: Stock
 yaml_records_filename: stored_data\myob_records_data.yml
 md5_records_filename: stored_data\myob_records_md5.yml
 categories_filename: stored_data\categories_data.yml
-spree_baseurl: "http://localhost:3000/"
+spree_baseurl: "http://localhost:3000"
 images_folder: [MYOB PRODUCT IMAGES FOLDER]
 only_images: true
 

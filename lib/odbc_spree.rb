@@ -60,6 +60,8 @@ module Spree
           instance_variable_set("@#{key}", value)
         end
 
+        @spree_baseurl += "/" unless @spree_baseurl.end_with? "/"
+
         # Add the spree env to filenames
         @yaml_records_filename.gsub!(".yml", "_#{env}.yml")
         @md5_records_filename.gsub!(".yml", "_#{env}.yml")

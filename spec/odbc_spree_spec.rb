@@ -9,6 +9,18 @@ require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 
 include Spree::ODBC
 
+describe "Initializing Config" do
+  before :all do
+    stub_dbi
+    @rm = RM.new("test")
+  end
+
+  it "should be able to append '/' to the spree baseurl if not there." do
+    # config_test.yml contains: "http://localhost:3000"
+    @rm.spree_baseurl.should == "http://localhost:3000/"
+  end
+end
+
 describe "File Operations (Saving YAML Data, etc.)" do
   before :all do
     stub_dbi
@@ -27,7 +39,6 @@ describe "File Operations (Saving YAML Data, etc.)" do
     @rm.load_file_with_defaults(filename, true).should == true
   end
 end
-
 
 describe "MYOB Database ODBC Connection - Stock Records" do
   before :all do
