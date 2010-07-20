@@ -41,7 +41,7 @@ class Multipart
     req.basic_auth user, password if user  && password
     net_http = Net::HTTP.new(url.host, url.port)
 
-    net_http.use_ssl = true if uri.scheme = "https"
+    net_http.use_ssl = true if url.scheme == "https"
 
     res = net_http.start {|http| http.request(req) }
 
