@@ -2,14 +2,14 @@ require 'net/http'
 require 'net/https'
 
 class Multipart
- 
+
   def initialize(file_names)
     @file_names = file_names
   end
-  
+
   def post(to_url, content_type, user, password)
     boundary = '----RubyMultipartClient' + rand(1000000).to_s + 'ZZZZZ'
-   
+
     parts = []
     streams = []
 
@@ -25,40 +25,44 @@ class Multipart
       parts << StreamPart.new(stream, File.size(filepath))
     end
     parts << StringPart.new( "\r\n--" + boundary + "--\r\n" )
-    
+
     #parts << StringPart.new( "--" + boundary + "\r\n" +
     #  "Content-Disposition: form-data; name=\"authenticity_token\"; value=\"" + auth_token + "\"\r\n")
     #parts << StringPart.new( "\r\n--" + boundary + "--\r\n" )
-   
+
     post_stream = MultipartStream.new( parts )
-   
+
     url = URI.parse( to_url )
     req = Net::HTTP::Post.new(url.path)
     req.content_length = post_stream.size
     req.content_type = 'multipart/form-data; boundary=' + boundary
     req.body_stream = post_stream
-    
+
     req.basic_auth user, password if user  && password
-    res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
-    
+    net_http = Net::HTTP.new(url.host, url.port)
+
+    net_http.use_ssl = true if uri.scheme = "https"
+
+    res = net_http.start {|http| http.request(req) }
+
     streams.each do |stream|
       stream.close();
     end
-   
+
     res
   end
- 
+
 end
 
 class StreamPart
   def initialize( stream, size )
     @stream, @size = stream, size
   end
- 
+
   def size
     @size
   end
- 
+
   def read( offset, how_much )
     @stream.read( how_much )
   end
@@ -68,11 +72,11 @@ class StringPart
   def initialize( str )
     @str = str
   end
- 
+
   def size
     @str.length
   end
- 
+
   def read( offset, how_much )
     @str[offset, how_much]
   end
@@ -84,7 +88,7 @@ class MultipartStream
     @part_no = 0;
     @part_offset = 0;
   end
- 
+
   def size
     total = 0
     @parts.each do |part|
@@ -92,23 +96,23 @@ class MultipartStream
     end
     total
   end
- 
+
   def read( how_much )
-   
+
     if @part_no >= @parts.size
       return nil;
     end
-   
+
     how_much_current_part = @parts[@part_no].size - @part_offset
-   
+
     how_much_current_part = if how_much_current_part > how_much
       how_much
     else
       how_much_current_part
     end
-   
+
     how_much_next_part = how_much - how_much_current_part
-   
+
     current_part = @parts[@part_no].read(@part_offset, how_much_current_part )
 
     if how_much_next_part > 0
@@ -126,3 +130,4 @@ class MultipartStream
     end
   end
 end
+
