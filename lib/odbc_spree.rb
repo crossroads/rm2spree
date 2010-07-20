@@ -642,7 +642,7 @@ and corresponding products might need to be updated.",
         @log.debug(%Q"Uploading image to [#{@spree_baseurl}]...
       - Image_file: #{image_file.split("\\").last}
       - Product_name: #{product_id}")
-        url_string = "#{@spree_baseurl}/admin/products/#{product_id}/images"
+        url_string = "#{@spree_baseurl}admin/products/#{product_id}/images"
         m = Multipart.new 'image[attachment]' => image_file
         m.post(url_string, "image/jpeg", @spree_user, @spree_password)
         @log.debug("  - Image was successfully uploaded!")
