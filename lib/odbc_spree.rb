@@ -85,6 +85,11 @@ module Spree
           end
         end
 
+        # Load valid product barcodes (with proofed
+        # descriptions). If the yaml file doesnt exist,
+        # the script will treat all products as valid.
+        @valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } rescue :all
+
         connect if @env=="test"
       end
 
@@ -449,7 +454,9 @@ and corresponding products might need to be updated.",
           case stock_action
             when :new                   # If the product is a new product to be added to the web-store
               image_path = find_image(@stock_records_current[stock_id]["Barcode"])
-              if (@only_images && image_path) || !@only_images
+
+              if ((@only_images and image_path) or !@only_images) and
+                 (@valid_products == :all or @valid_products.include?(@stock_records_current[stock_id]["Barcode"].strip.upcase))
 
                 cat_id = find_category_by_stockid(stock_id)[:sub_cat]
                 dept_id = @stock_records_current[stock_id]["dept_id"]
