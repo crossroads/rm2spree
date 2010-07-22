@@ -42,6 +42,9 @@ class Multipart
     net_http = Net::HTTP.new(url.host, url.port)
 
     net_http.use_ssl = true if url.scheme == "https"
+    
+    # Make timeout reasonable for large image uploads
+    net_http.timeout = 75
 
     res = net_http.start {|http| http.request(req) }
 
