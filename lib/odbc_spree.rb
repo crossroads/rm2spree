@@ -401,8 +401,7 @@ It might need to be also renamed on the web-store.",
           dept_name = @categories_current[:dept][id].capitalize
           taxonomy_data = {"name"             => dept_name,
                            "myob_dept_string" => dept_name}
-          if add_spree_category(taxonomy_data, :taxonomy)
-          end
+          add_spree_category(taxonomy_data, :taxonomy)
 
         when :delete
           errors_for_email[id] = {:message =>
