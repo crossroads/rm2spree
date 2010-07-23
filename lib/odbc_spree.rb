@@ -277,7 +277,8 @@ module Spree
           category_maps << section if section[2] == catvalue_id
         }
         category_maps.each { |category|
-          dept_hash[category[0]] = categories[:dept][category[0]] if category[0] != 0    #Find department name from department id (if department isnt 0)
+          # Find department name from department id (if department isnt 0)
+          dept_hash[category[0]] = categories[:dept][category[0]] if category[0] != 0
         }
         category_details_hash = {:sub_cat  => catvalue_id,
                                  :cat_name => categories[:cat1][catvalue_id],
@@ -423,9 +424,10 @@ and corresponding products might need to be updated.",
           category_details = find_category_details_by_catvalue_id(id, @categories_current, @categorised_values)
             # Reasons to not add a category : its name is "<N/A>", or it belongs to no departments.
             if category_details[:cat_name] != "<N/A>" && category_details[:dept_details] != {} then
-              category_details[:dept_details].each { |department|         # add the category to each department it belongs to...
-                taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(department[0])    # Find the spree taxonomy id for the given department.
+              # add the category to each department it belongs to...
+              category_details[:dept_details].each { |dept_id, dept_name|
                 cat_name = category_details[:cat_name].capitalize
+                taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_name)    # Find the spree taxonomy id for the given department.
                 taxon_data = {"name" => cat_name,
                               "myob_cat_string" => cat_name,
                               "taxonomy_id" => taxonomy_id,
@@ -462,10 +464,15 @@ and corresponding products might need to be updated.",
 
                 cat_id = find_category_by_stockid(stock_id)[:sub_cat]
                 dept_id = @stock_records_current[stock_id]["dept_id"]
-                taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_id)
+
+                # Using names instead of ids for categories
+                dept_name = @categories_curent[:dept][dept_id]
+                cat_name  = @categories_curent[:cat1][cat_id]
+
+                taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_name)
                 new_product_data = get_product_data(stock_id, @stock_records_current)
 
-                if taxon_id = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
+                if taxon_id = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_name, taxonomy_id)
                   new_product_data["taxon_id"] = taxon_id
                   if new_product_data["weight"] != nil    # Only add products that have feasible weights.
                     if new_product = add_spree_product(new_product_data)    # if the function returns true...
@@ -579,8 +586,13 @@ and corresponding products might need to be updated.",
 	      product_data = get_product_data(stock_id, stock_records_new)
 	      cat_id = find_category_by_stockid(stock_id)[:sub_cat]
 	      dept_id = stock_records_new[stock_id]["dept_id"]
-	      taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_id)
-	      product_data["taxon_id"] = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
+
+        # Using names instead of ids for categories
+        dept_name = @categories_curent[:dept][dept_id]
+        cat_name  = @categories_curent[:cat1][cat_id]
+
+	      taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_name)
+	      product_data["taxon_id"] = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_name, taxonomy_id)
 	      if update_product == nil
 		      @log.error(":: Error: Product could not be found in Spree database. [stock_id = #{stock_id}]")
 		      return false
@@ -743,15 +755,15 @@ class TaxonomySync < ActiveResource::Base; end
 # --------- Patches for various classes
 
 class Array   # Defines a method on arrays to search for a taxonomy by its dept_id field.
-  def find_taxonomy_id_by_dept(dept_id)
+  def find_taxonomy_id_by_dept(dept_name)
     self.each do |taxonomy|
-      return taxonomy.id if taxonomy.myob_dept_id == dept_id
+      return taxonomy.id if taxonomy.myob_dept_string == dept_name.capitalize
     end
     return nil
   end
-  def find_taxon_id_by_cat_and_taxonomy(cat_id, taxonomy_id)
+  def find_taxon_id_by_cat_and_taxonomy(cat_name, taxonomy_id)
     self.each do |taxon|
-      return taxon.id if taxon.myob_cat_id == cat_id && taxon.taxonomy_id == taxonomy_id
+      return taxon.id if taxon.myob_cat_string == cat_name.capitalize and taxon.taxonomy_id == taxonomy_id
     end
     return nil
   end
