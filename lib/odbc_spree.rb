@@ -216,7 +216,7 @@ module Spree
           }
         category_hash
 
-        rescue DBI::InterfaceError => e
+      rescue DBI::InterfaceError => e
           @log.error(%Q":: An error occurred:
          #{e}")
           category_hash = false
@@ -422,8 +422,8 @@ and corresponding products might need to be updated.",
                                        :new_state => @categories_current[:cat1][id]}
         when :new
           category_details = find_category_details_by_catvalue_id(id, @categories_current, @categorised_values)
-            # Reasons to not add a category : its name is "<N/A>", or it belongs to no departments.
-            if category_details[:cat_name] != "<N/A>" && category_details[:dept_details] != {} then
+            # Don't add a category if it belongs to no departments.
+            if category_details[:dept_details] != {} then
               # add the category to each department it belongs to...
               category_details[:dept_details].each { |dept_id, dept_name|
                 cat_name = category_details[:cat_name].capitalize
