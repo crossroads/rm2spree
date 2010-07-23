@@ -209,14 +209,14 @@ describe "Spree Active Resource Connection" do
 
   it "should be able to upload a valid new image to a Spree product in the database" do
     # generate a random 512KB image file in /tmp
-    create_dummy_image("/tmp/test_image.jpg", "512")
+    create_dummy_image("/tmp/test_image.jpg", 0.5)
     @rm.upload_image("/tmp/test_image.jpg", "TEST PRODUCT").should == true
     delete_dummy_image("/tmp/test_image.jpg")
   end
 
   it "should not be able to upload an image that is larger than 1MB" do
     # generate a random 1.5MB image file in /tmp
-    create_dummy_image("/tmp/test_image.jpg", "1512")
+    create_dummy_image("/tmp/test_image.jpg", 1.5)
     @rm.upload_image("/tmp/test_image.jpg", "TEST PRODUCT").should == false
     delete_dummy_image("/tmp/test_image.jpg")
   end

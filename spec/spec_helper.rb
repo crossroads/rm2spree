@@ -215,10 +215,19 @@ def stub_dbi
 end
 
 def create_dummy_image(filename, size)
-  system("dd if=/dev/urandom of=#{filename} count=#{size} bs=1024 > /dev/null 2>&1")
+  #system("dd if=/dev/urandom of=#{filename} count=#{size} bs=1024 > /dev/null 2>&1")
+  file_size = 0
+  string = "abcdefghijklmnopqrstuvwxyz123456"
+  File.open(filename, 'w') do |f|
+    while file_size < size.to_f * 1048576 # bytes in 1MB
+      f.print string
+      file_size += string.size
+    end
+  end
 end
 
 def delete_dummy_image(filename)
-  system("rm #{filename}")
+  #system("rm #{filename}")
+  File.delete(filename)
 end
 
