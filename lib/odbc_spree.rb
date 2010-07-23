@@ -459,38 +459,40 @@ and corresponding products might need to be updated.",
             when :new                   # If the product is a new product to be added to the web-store
               image_path = find_image(@stock_records_current[stock_id]["Barcode"])
 
-              if ((@only_images and image_path) or !@only_images) and
-                 (@valid_products == :all or @valid_products.include?(@stock_records_current[stock_id]["Barcode"].strip.upcase))
+              if ((@only_images and image_path) or !@only_images)
+                if (@valid_products == :all or @valid_products.include?(@stock_records_current[stock_id]["Barcode"].strip.upcase))
+                  cat_id = find_category_by_stockid(stock_id)[:sub_cat]
+                  dept_id = @stock_records_current[stock_id]["dept_id"]
 
-                cat_id = find_category_by_stockid(stock_id)[:sub_cat]
-                dept_id = @stock_records_current[stock_id]["dept_id"]
+                  # Using names instead of ids for categories
+                  dept_name = @categories_current[:dept][dept_id]
+                  cat_name  = @categories_current[:cat1][cat_id]
 
-                # Using names instead of ids for categories
-                dept_name = @categories_current[:dept][dept_id]
-                cat_name  = @categories_current[:cat1][cat_id]
+                  taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_name)
+                  new_product_data = get_product_data(stock_id, @stock_records_current)
 
-                taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_name)
-                new_product_data = get_product_data(stock_id, @stock_records_current)
-
-                if taxon_id = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_name, taxonomy_id)
-                  new_product_data["taxon_id"] = taxon_id
-                  if new_product_data["weight"] != nil    # Only add products that have feasible weights.
-                    if new_product = add_spree_product(new_product_data)    # if the function returns true...
-                      action_count[:new] += 1
-                      if image_path # If there is an image for the new product, then upload it to the web-store.
-                        if upload_image(image_path, new_product.permalink)
-                          action_count[:image] += 1
+                  if taxon_id = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_name, taxonomy_id)
+                    new_product_data["taxon_id"] = taxon_id
+                    if new_product_data["weight"] != nil    # Only add products that have feasible weights.
+                      if new_product = add_spree_product(new_product_data)    # if the function returns true...
+                        action_count[:new] += 1
+                        if image_path # If there is an image for the new product, then upload it to the web-store.
+                          if upload_image(image_path, new_product.permalink)
+                            action_count[:image] += 1
+                          end
+                        else
+                          @log.debug("  - Product did not have an image. Not uploaded.")
                         end
-                      else
-                        @log.debug("  - Product did not have an image. Not uploaded.")
+                      else                                        # otherwise if 'add_spree_product' function returns false
+                        action_count[:error] += 1
                       end
-                    else                                        # otherwise if 'add_spree_product' function returns false
-                      action_count[:error] += 1
                     end
+                  else  #else if taxon_id = nil
+                    @log.error(":: Error: Taxon could not be found with myob_cat_name: #{cat_name}")
+                    action_count[:error] += 1
                   end
-                else  #else if taxon_id = nil
-                  @log.error(":: Error: Taxon could not be found with myob_cat_name: #{cat_name}")
-                  action_count[:error] += 1
+                else
+                  action_count[:ignore_valid] += 1
                 end
               else
                 action_count[:ignore_image] += 1

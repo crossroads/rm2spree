@@ -76,6 +76,7 @@ action_count = {:new => 0,
                 :image => 0,
                 :ignore => 0,
                 :ignore_image => 0,
+                :ignore_valid => 0,
                 :error => 0}
 
 # Fetch all taxons from Spree.
@@ -102,6 +103,7 @@ end
                -- (#{'%.3f' % ((Time.now - start_time) / 60)} minutes.)
      - Added #{action_count[:new]} product(s) to the web-store.
         - Ignored #{action_count[:ignore_image]} product(s) that did not have images to upload.
+        - Ignored #{action_count[:ignore_valid]} product(s) that were not part of the 'proofed descriptions' list.
         - There were #{action_count[:new] + action_count[:ignore_image]} product(s) available for the webstore.
      - Updated #{action_count[:update]} product(s) in the web-store.
      - Deleted #{action_count[:delete]} product(s) from the web-store.
