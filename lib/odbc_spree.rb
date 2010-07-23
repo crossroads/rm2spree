@@ -397,8 +397,9 @@ It might need to be also renamed on the web-store.",
                                   :new_state => @categories_curent[:dept][id]}
 
         when :new
-          taxonomy_data = {"name" => @categories_current[:dept][id].capitalize,
-                                    "myob_dept_id" => id}
+          dept_name = @categories_current[:dept][id].capitalize
+          taxonomy_data = {"name"             => dept_name,
+                           "myob_dept_string" => dept_name}
           if add_spree_category(taxonomy_data, :taxonomy)
           end
 
@@ -424,10 +425,11 @@ and corresponding products might need to be updated.",
             if category_details[:cat_name] != "<N/A>" && category_details[:dept_details] != {} then
               category_details[:dept_details].each { |department|         # add the category to each department it belongs to...
                 taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(department[0])    # Find the spree taxonomy id for the given department.
-                taxon_data = {"name" => category_details[:cat_name].capitalize,
-                                     "taxonomy_id" => taxonomy_id,
-                                     "parent_id" => taxonomy_id,
-                                    "myob_cat_id" => id}
+                cat_name = category_details[:cat_name].capitalize
+                taxon_data = {"name" => cat_name,
+                              "myob_cat_string" => cat_name,
+                              "taxonomy_id" => taxonomy_id,
+                              "parent_id" => taxonomy_id}
                 add_spree_category(taxon_data, :taxon)
               }
             end
