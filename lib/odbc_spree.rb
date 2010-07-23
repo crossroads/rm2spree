@@ -260,7 +260,7 @@ module Spree
 
       def find_category_by_stockid(stock_id)
         # stock_id, dept_id, cat_id, category_level, catvalue_id
-        stock_category_data = @access_db.select_all("SELECT * FROM \"CategorisedStock\" WHERE \"stock_id\" = #{stock_id} AND \"category_level\" = 2")
+        stock_category_data = @access_db.select_all("SELECT * FROM \"CategorisedStock\" WHERE \"stock_id\" = #{stock_id} AND \"category_level\" = 1")
         stock_category_hash = {:dept_id => stock_category_data[0][1],
                                :sub_cat => stock_category_data[0][4]}
         rescue DBI::InterfaceError => e
