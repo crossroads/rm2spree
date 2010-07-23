@@ -488,7 +488,7 @@ and corresponding products might need to be updated.",
                       end
                     end
                   else  #else if taxon_id = nil
-                    @log.error(":: Error: Taxon could not be found with myob_cat_name: #{cat_name}")
+                    @log.error(":: Error: Taxon could not be found with the following details:\n -- myob_cat_name: #{cat_name}\n -- dept_name: #{dept_name}\n -- taxonomy_id: #{taxonomy_id}")
                     action_count[:error] += 1
                   end
                 else
