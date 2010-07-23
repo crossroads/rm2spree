@@ -45,7 +45,7 @@ class MockLogger
     #puts message
   end
   def error(message)
-    puts message
+    #puts message
   end
 end
 
@@ -212,5 +212,13 @@ end
 def stub_dbi
     # Never connect to a real odbc datasource.
     DBI.stub!(:connect).and_return(MockODBCConnection.new)
+end
+
+def create_dummy_image(filename, size)
+  system("dd if=/dev/urandom of=#{filename} count=#{size} bs=1024 > /dev/null 2>&1")
+end
+
+def delete_dummy_image(filename)
+  system("rm #{filename}")
 end
 

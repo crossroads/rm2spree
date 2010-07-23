@@ -207,8 +207,18 @@ describe "Spree Active Resource Connection" do
     @rm.add_spree_category(sample_taxon_data, :taxonomy).should_not == false
   end
 
-  it "should be able to upload a new image to a Spree product in the database" do
-    @rm.upload_image("foo.jpg", "TEST PRODUCT").should == true
+  it "should be able to upload a valid new image to a Spree product in the database" do
+    # generate a random 512KB image file in /tmp
+    create_dummy_image("/tmp/test_image.jpg", "512")
+    @rm.upload_image("/tmp/test_image.jpg", "TEST PRODUCT").should == true
+    delete_dummy_image("/tmp/test_image.jpg")
+  end
+
+  it "should not be able to upload an image that is larger than 1MB" do
+    # generate a random 1.5MB image file in /tmp
+    create_dummy_image("/tmp/test_image.jpg", "1512")
+    @rm.upload_image("/tmp/test_image.jpg", "TEST PRODUCT").should == false
+    delete_dummy_image("/tmp/test_image.jpg")
   end
 end
 

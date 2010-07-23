@@ -648,6 +648,11 @@ and corresponding products might need to be updated.",
       end
 
       def upload_image(image_file, product_id)
+        image_size = File.size(image_file)
+        if image_size > 1048576 # (1MB)
+          raise "'#{image_file}' is too big (%2.fMB > 1MB)" % (image_size.to_f / 1048576)
+        end
+
         @log.debug(%Q"Uploading image to [#{@spree_baseurl}]...
       - Image_file: #{image_file.split("\\").last}
       - Product_name: #{product_id}")
