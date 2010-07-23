@@ -395,7 +395,7 @@ module Spree
 %Q"A department name has been updated.
 It might need to be also renamed on the web-store.",
                                   :previous_state => @categories_old[:dept][id],
-                                  :new_state => @categories_curent[:dept][id]}
+                                  :new_state => @categories_current[:dept][id]}
 
         when :new
           dept_name = @categories_current[:dept][id].capitalize
@@ -419,7 +419,7 @@ and corresponding products might need to be updated.",
         when :update    # Ignore string value updates. We only care about category ids being added or deleted.
           errors_for_email[id] = {:message => "A category name has been updated. It might need to be also renamed on the web-store.",
                                        :previous_state => @categories_old[:cat1][id],
-                                       :new_state => @categories_curent[:cat1][id]}
+                                       :new_state => @categories_current[:cat1][id]}
         when :new
           category_details = find_category_details_by_catvalue_id(id, @categories_current, @categorised_values)
             # Reasons to not add a category : its name is "<N/A>", or it belongs to no departments.
@@ -466,8 +466,8 @@ and corresponding products might need to be updated.",
                 dept_id = @stock_records_current[stock_id]["dept_id"]
 
                 # Using names instead of ids for categories
-                dept_name = @categories_curent[:dept][dept_id]
-                cat_name  = @categories_curent[:cat1][cat_id]
+                dept_name = @categories_current[:dept][dept_id]
+                cat_name  = @categories_current[:cat1][cat_id]
 
                 taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_name)
                 new_product_data = get_product_data(stock_id, @stock_records_current)
