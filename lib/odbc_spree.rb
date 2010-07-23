@@ -588,8 +588,8 @@ and corresponding products might need to be updated.",
 	      dept_id = stock_records_new[stock_id]["dept_id"]
 
         # Using names instead of ids for categories
-        dept_name = @categories_curent[:dept][dept_id]
-        cat_name  = @categories_curent[:cat1][cat_id]
+        dept_name = @categories_current[:dept][dept_id]
+        cat_name  = @categories_current[:cat1][cat_id]
 
 	      taxonomy_id = @spree_taxonomies.find_taxonomy_id_by_dept(dept_name)
 	      product_data["taxon_id"] = @spree_taxons.find_taxon_id_by_cat_and_taxonomy(cat_name, taxonomy_id)
@@ -598,7 +598,7 @@ and corresponding products might need to be updated.",
 		      return false
 	      else
 
-		      #TODO - need to sort out how to find if images are updated.
+		      #TODO - sort out how to find if images are updated.
 
 		      # Upload image if it has changed from 'not existing' to 'existing'.
 #	        if image_field(stock_id, stock_records_new) != image_field(stock_id, stock_records_old)

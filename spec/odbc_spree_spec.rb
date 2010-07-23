@@ -150,6 +150,8 @@ describe "Spree Active Resource Connection" do
 
     stub_dbi
     @rm = RM.new("test")
+
+    @rm.categories_current = sample_full_categories
   end
 
   before :each do

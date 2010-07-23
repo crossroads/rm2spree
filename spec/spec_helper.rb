@@ -96,6 +96,12 @@ def sample_categories
   10=>"DECOR"}
 end
 
+def sample_full_categories
+  {:dept => sample_categories,
+   :cat1 => sample_categories}
+end
+
+
 def sample_odbc_department_values
   [[5, 0, "GIFT SETS", "6/03/2008 22:56"],
   [4, 0, "FOOD", "7/03/2008 10:21"],
@@ -210,8 +216,8 @@ end
 
 
 def stub_dbi
-    # Never connect to a real odbc datasource.
-    DBI.stub!(:connect).and_return(MockODBCConnection.new)
+  # Never connect to a real odbc datasource.
+  DBI.stub!(:connect).and_return(MockODBCConnection.new)
 end
 
 def create_dummy_image(filename, size)
