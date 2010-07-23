@@ -52,7 +52,8 @@ category_changes[:cat1].each { |id, action|
 
 # Sends a get request to the server,
 # to trigger the 'translate taxons' method.
-TaxonSync.find("translate")
+######### TaxonSync.find("translate")
+######### (our translations are all handled by google docs now)
 
 # Save the categories data.
 @rm.save_categories_data_to_files
