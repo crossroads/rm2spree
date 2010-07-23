@@ -41,10 +41,11 @@ class Multipart
     req.basic_auth user, password if user  && password
     net_http = Net::HTTP.new(url.host, url.port)
 
-    net_http.use_ssl = true if url.scheme == "https"
-    
-    # Make timeout reasonable for large image uploads
-    net_http.timeout = 75
+    if url.scheme == "https"
+      net_http.use_ssl = true
+      # Make ssl timeout reasonable for large image uploads
+      net_http.timeout = 75
+    end
 
     res = net_http.start {|http| http.request(req) }
 
