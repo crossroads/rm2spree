@@ -489,7 +489,7 @@ and corresponding products might need to be updated.",
                     end
                   end
                 else  #else if taxon_id = nil
-                  @log.error(":: Error: Taxon ID could not be found.")
+                  @log.error(":: Error: Taxon could not be found with name: #{cat_name}")
                   action_count[:error] += 1
                 end
               else
