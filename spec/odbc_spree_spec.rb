@@ -100,19 +100,19 @@ describe Spree::ODBC::RM do
     it "should be able to find updated records based on md5 hash changes" do
       md5hash_new = {1 => "0d3eb35b9dd03df47138d78bf322e05f"}
       md5hash_old = {1 => "[CHANGED]0d3eb35b9dd03df47138d78bf322e05f"}
-      @rm.compare_tables(md5hash_new, md5hash_old)[1].should == :update
+      @rm.compare_tables(md5hash_new, md5hash_old)[0][1].should == :update
     end
 
     it "should be able to find new records based on md5 hash changes" do
       md5hash_new = {1 => "0d3eb35b9dd03df47138d78bf322e05f"}
       md5hash_old = {}
-      @rm.compare_tables(md5hash_new, md5hash_old)[1].should == :new
+      @rm.compare_tables(md5hash_new, md5hash_old)[0][1].should == :new
     end
 
     it "should be able to find deleted records based on md5 hash changes" do
       md5hash_new = {}
       md5hash_old = {1 => "0d3eb35b9dd03df47138d78bf322e05f"}
-      @rm.compare_tables(md5hash_new, md5hash_old)[1].should == :delete
+      @rm.compare_tables(md5hash_new, md5hash_old)[0][1].should == :delete
     end
   end
 

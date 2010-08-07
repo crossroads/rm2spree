@@ -337,7 +337,6 @@ module Spree
       def compare_tables(value_hash, value_hash_old)
         value_changes = {}
         value_change_count = {:update => 0, :new => 0, :delete => 0}
-        @log.debug("Scanning for record changes in database by comparing value hashes...")
         value_hash_old.each { |id, value|
           if value != value_hash[id]
             if value_hash[id] == nil
@@ -357,15 +356,7 @@ module Spree
             end
           end
         }
-        if value_changes.size == 0
-          @log.debug("  - Found no changes in hash tables.")
-        else
-          @log.debug(%Q":: Some stock records have been changed:
-        - #{value_change_count[:update] } updated item(s)
-        - #{value_change_count[:new] } new item(s)
-        - #{value_change_count[:delete] } deleted item(s)")
-        end
-        return value_changes
+        return value_changes, value_change_count
       end
 
 

@@ -33,9 +33,22 @@ start_time = Time.now
 
 category_changes = {}
 [:dept, :cat1].each do |c|
-  category_changes[c] = @rm.compare_tables(@rm.categories_current[c],
-                                           @rm.categories_old[c])
+  table = c == :dept ? "Department" : "Category"
+  @log.debug("== Scanning for #{table} changes ...")
+
+  category_changes[c], vcc = @rm.compare_tables(@rm.categories_current[c],
+                                                @rm.categories_old[c])
+
+  if category_changes[c].size == 0
+    @log.debug("  - Found no changes in #{table} table.")
+  else
+    @log.debug(%Q":: Some #{table} records have been changed:
+  - #{vcc[:update] } updated item(s)
+  - #{vcc[:new] } new item(s)
+  - #{vcc[:delete] } deleted item(s)")
+  end
 end
+
 
 errors_for_email = {}
 # If there were any category changes, push them to Spree.
@@ -67,8 +80,18 @@ send_error_email(errors_for_email) if errors_for_email != {}
 # --------------------------------------------------------------------
 @rm.log.debug("== Scanning for Stock changes ...")
 
-stock_changes = @rm.compare_tables(@rm.md5_hash_current,
-                                   @rm.md5_hash_old)
+stock_changes, vcc = @rm.compare_tables(@rm.md5_hash_current,
+                                        @rm.md5_hash_old)
+
+if stock_changes.size == 0
+  @log.debug("  - Found no changes in Stock table.")
+else
+  @log.debug(%Q":: Some Stock records have been changed:
+- #{vcc[:update] } updated item(s)
+- #{vcc[:new] } new item(s)
+- #{vcc[:delete] } deleted item(s)")
+end
+
 
 action_count = {:new => 0,
                 :update => 0,
