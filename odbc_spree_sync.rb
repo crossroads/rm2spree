@@ -91,6 +91,9 @@ stock_changes.each do |stock_id, stock_action|
   @rm.process_stock_change(stock_id, stock_action, action_count)
 end
 
+# Remove ignored stock from current records and md5 hashes.
+@rm.remove_ignored_stock
+
 # Update the saved stock record files to current data.
 @rm.log.debug("Saving updated records and MD5 hashes to disk...")
 @rm.save_stock_data_to_files

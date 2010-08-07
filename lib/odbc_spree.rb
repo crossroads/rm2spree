@@ -44,7 +44,8 @@ module Spree
                     :stock_records_current,
                     :stock_records_old,
                     :spree_taxonomies,
-                    :spree_taxons
+                    :spree_taxons,
+                    :ignored_stock
 
       def initialize(env, bootstrap = false)
         @env = env
@@ -90,6 +91,10 @@ module Spree
         # the script will treat all products as valid.
         @valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } rescue :all
 
+        # An array to store all stock_ids that we ignore,
+        # to be removed from the stored_data hashes.
+        @ignored_stock = []
+
         connect if @env=="test"
       end
 
@@ -127,6 +132,15 @@ module Spree
         @log.debug("=== Writing YAML file: \"#{filename}\"...")
         File.open(filename, "w") do |f|
           f.write(data_to_write.to_yaml)
+        end
+      end
+
+      def remove_ignored_stock
+        @md5_hash_current.delete_if do |id, hash|
+          @ignored_stock.include?(id)
+        end
+        @stock_records_current.delete_if do |id, hash|
+          @ignored_stock.include?(id)
         end
       end
 
@@ -489,12 +503,15 @@ and corresponding products might need to be updated.",
                   else  #else if taxon_id = nil
                     @log.error(":: Error: Taxon could not be found with the following details:\n -- myob_cat_name: #{cat_name}\n -- dept_name: #{dept_name}\n -- taxonomy_id: #{taxonomy_id}")
                     action_count[:error] += 1
+                    @ignored_stock << stock_id
                   end
                 else
                   action_count[:ignore_valid] += 1
+                  @ignored_stock << stock_id
                 end
               else
                 action_count[:ignore_image] += 1
+                @ignored_stock << stock_id
               end
             when :update          # If the product has already been added to the web-store but needs to be updated...
               if update_spree_product(stock_id, @stock_records_current, @stock_records_old)
