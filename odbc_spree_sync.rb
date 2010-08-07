@@ -100,13 +100,14 @@ action_count = {:new => 0,
                 :ignore_valid => 0,
                 :error => 0}
 
-# Fetch all taxons from Spree.
+@rm.log.debug("== Fetching all taxons from Spree...")
 @rm.get_spree_taxons
 
 depts = {}
 taxonomys = {}
 taxons = {}
 
+@rm.log.debug("== Processing Stock record changes...") unless stock_changes.empty?
 # If there were any record changes, push them to Spree.
 stock_changes.each do |stock_id, stock_action|
   @rm.process_stock_change(stock_id, stock_action, action_count)
@@ -128,7 +129,7 @@ end
      - Added #{action_count[:new]} product(s) to the web-store.
         - Ignored #{action_count[:ignore_image]} product(s) that did not have images to upload.
         - Ignored #{action_count[:ignore_valid]} product(s) that were not part of the 'proofed descriptions' list.
-        - There were #{action_count[:new] + action_count[:ignore_image]} product(s) available for the webstore.
+        - There were #{action_count[:new] + action_count[:ignore_image] + action_count[:ignore_valid]} product(s) available for the webstore.
      - Updated #{action_count[:update]} product(s) in the web-store.
      - Deleted #{action_count[:delete]} product(s) from the web-store.
      - Uploaded #{action_count[:image]} image(s) to products in the web-store.
