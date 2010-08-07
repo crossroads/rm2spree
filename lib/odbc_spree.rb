@@ -453,11 +453,14 @@ and corresponding products might need to be updated.",
         # Unless there is at least one record matching the stock_id, ignore the entire stock_action.
         if @stock_records_old[stock_id] || @stock_records_current[stock_id]
 
-          web_store_current = @stock_records_current[stock_id]["custom1"].downcase.strip     # .downcase the value, because it could be
-          web_store_old = @stock_records_old[stock_id]["custom1"].downcase.strip                 # either "Yes" or "yes"
-          stock_action = evaluate_stock_action_with_webstore(stock_action,
-                                                             web_store_old,
-                                                             web_store_current)
+          # if the item was previously detected, work out if we need to alter our action
+          if @stock_records_old[stock_id]
+            web_store_current = @stock_records_current[stock_id]["custom1"].downcase.strip     # .downcase the value, because it could be
+            web_store_old = @stock_records_old[stock_id]["custom1"].downcase.strip                 # either "Yes" or "yes"
+            stock_action = evaluate_stock_action_with_webstore(stock_action,
+                                                               web_store_old,
+                                                               web_store_current)
+          end
 
           case stock_action
             when :new                   # If the product is a new product to be added to the web-store
