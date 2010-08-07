@@ -34,15 +34,15 @@ start_time = Time.now
 category_changes = {}
 [:dept, :cat1].each do |c|
   table = c == :dept ? "Department" : "Category"
-  @log.debug("== Scanning for #{table} changes ...")
+  @rm.log.debug("== Scanning for #{table} changes ...")
 
   category_changes[c], vcc = @rm.compare_tables(@rm.categories_current[c],
                                                 @rm.categories_old[c])
 
   if category_changes[c].size == 0
-    @log.debug("  - Found no changes in #{table} table.")
+    @rm.log.debug("  - Found no changes in #{table} table.")
   else
-    @log.debug(%Q":: Some #{table} records have been changed:
+    @rm.log.debug(%Q":: Some #{table} records have been changed:
   - #{vcc[:update] } updated item(s)
   - #{vcc[:new] } new item(s)
   - #{vcc[:delete] } deleted item(s)")
@@ -84,9 +84,9 @@ stock_changes, vcc = @rm.compare_tables(@rm.md5_hash_current,
                                         @rm.md5_hash_old)
 
 if stock_changes.size == 0
-  @log.debug("  - Found no changes in Stock table.")
+  @rm.log.debug("  - Found no changes in Stock table.")
 else
-  @log.debug(%Q":: Some Stock records have been changed:
+  @rm.log.debug(%Q":: Some Stock records have been changed:
 - #{vcc[:update] } updated item(s)
 - #{vcc[:new] } new item(s)
 - #{vcc[:delete] } deleted item(s)")
