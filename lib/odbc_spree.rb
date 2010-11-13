@@ -89,7 +89,7 @@ module Spree
         # Load valid product barcodes (with proofed
         # descriptions). If the yaml file doesnt exist,
         # the script will treat all products as valid.
-        @valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } || nil rescue :all
+        @valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } || :all rescue :all
 
         # An array to store all stock_ids that we ignore,
         # to be removed from the stored_data hashes.
