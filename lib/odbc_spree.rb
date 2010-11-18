@@ -1,10 +1,12 @@
+VERSION ||= "1.8.7"
+
 require "rubygems"
 gem "dbd-odbc"
 require 'dbi'
 require 'digest/md5'
 require 'logger'
 require 'pp'
-require File.join('lib', 'multipart_upload')
+require File.join(File.dirname(__FILE__), 'multipart_upload')
 require "active_resource"
 require "active_support"
 require 'net/http'

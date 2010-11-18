@@ -1,7 +1,6 @@
 require 'rubygems'
-require 'mocha'
 
-require File.join('lib', 'odbc_spree.rb')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'odbc_spree.rb')
 require 'ruby-debug'
 
 class Multipart                 # Overwrite the 'Multipart' code so that it doesnt actually post with net/http
