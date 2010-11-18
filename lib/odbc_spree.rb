@@ -1,5 +1,3 @@
-VERSION ||= "1.8.7"
-
 require "rubygems"
 gem "dbd-odbc"
 require 'dbi'

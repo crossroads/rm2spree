@@ -119,18 +119,17 @@ describe Spree::ODBC::RM do
   describe "Spree Active Resource Connection" do
     before :all do   # stub out the product and TaxonSync classes so they dont actually call the spree API
       Taxon = stub("Taxon")
-
-      Product.stubs(:attributes).returns(sample_spree_record)
-      Product.stubs(:valid?).returns(true)
-      Product.stubs(:deleted_at=).returns(Time.now)
-      Product.stubs(:save).returns(true)
-      Product.stubs(:permalink).returns("test_product")
-
       @rm.categories_current = sample_full_categories
     end
 
-    before :each do
-      Taxon.stubs(:save).returns(true)
+    before :each do      
+      Product.stub!(:attributes).and_return(sample_spree_record)
+      Product.stub!(:valid?).and_return(true)
+      Product.stub!(:deleted_at=).and_return(Time.now)
+      Product.stub!(:save).and_return(true)
+      Product.stub!(:permalink).and_return("test_product")
+      
+      Taxon.stub!(:save).and_return(true)
       ProductSync.stub!(:find).and_return([Product])
       ProductSync.stub!(:new).and_return(Product)
       TaxonSync.stub!(:find).and_return(true)
@@ -158,7 +157,7 @@ describe Spree::ODBC::RM do
     it "should be able to update a product in the Spree database" do
       ProductSync.should_receive(:find_by_stock_id).with(1).and_return(Product)
 
-      Product.stubs(:attributes).returns(sample_spree_record)
+      Product.stub!(:attributes).and_return(sample_spree_record)
       stub!(:upload_image).and_return(true)
       @rm.spree_taxons = []
       @rm.spree_taxonomies = []
