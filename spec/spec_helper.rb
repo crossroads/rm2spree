@@ -34,6 +34,12 @@ class MockODBCConnection
   end
 end
 
+class MockGoogleSpreadsheet
+  def valid_products
+    :all
+  end
+end
+
 # Mock logger to only display messages in terminal
 class MockLogger
   def initialize(*args); end
@@ -217,6 +223,8 @@ end
 def stub_dbi
   # Never connect to a real odbc datasource.
   DBI.stub!(:connect).and_return(MockODBCConnection.new)
+  # also stub google spreadsheet
+  ProductSpreadsheet.stub!(:new).and_return(MockGoogleSpreadsheet.new)
 end
 
 def create_dummy_image(filename, size)

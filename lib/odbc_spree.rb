@@ -4,13 +4,16 @@ require 'dbi'
 require 'digest/md5'
 require 'logger'
 require 'pp'
-require File.join(File.dirname(__FILE__), 'multipart_upload')
 require "active_resource"
 require "active_support"
+require 'google_spreadsheet'
 require 'net/http'
 require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
+
+require File.join(File.dirname(__FILE__), 'multipart_upload')
+require File.join(File.dirname(__FILE__), 'product_spreadsheet')
 
 Logger.class_eval do
   alias :log_info :info
@@ -89,7 +92,8 @@ module Spree
         # Load valid product barcodes (with proofed
         # descriptions). If the yaml file doesnt exist,
         # the script will treat all products as valid.
-        @valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } || :all rescue :all
+        #@valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } || :all rescue :all
+        @valid_products = ProductSpreadsheet.new.valid_products
 
         # An array to store all stock_ids that we ignore,
         # to be removed from the stored_data hashes.

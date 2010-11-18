@@ -10,7 +10,12 @@ GEM
     dbi (0.4.5)
       deprecated (= 2.0.1)
     deprecated (2.0.1)
+    google-spreadsheet-ruby (0.1.1)
+      hpricot (>= 0.3)
+      oauth (>= 0.3.6)
+    hpricot (0.8.1)
     linecache (0.43)
+    oauth (0.4.1)
     rspec (1.3.0)
     ruby-debug (0.10.3)
       columnize (>= 0.1)
@@ -26,5 +31,6 @@ DEPENDENCIES
   activesupport (= 2.3.5)
   dbd-odbc
   dbi
+  google-spreadsheet-ruby (= 0.1.1)
   rspec (= 1.3.0)
   ruby-debug

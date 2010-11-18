@@ -8,4 +8,6 @@ gem "activesupport", '2.3.5'
 
 gem "ruby-debug"
 
+gem "google-spreadsheet-ruby", '0.1.1'
+
 # gem 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in

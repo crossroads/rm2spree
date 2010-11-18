@@ -9,6 +9,7 @@ myob_records_md5.yml
 
 # Config (incld. passwords)
 config/config*.yml
+config/google_docs_translations.yml
 
 # Logs
 log/*.log*
