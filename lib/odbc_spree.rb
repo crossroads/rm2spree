@@ -11,6 +11,7 @@ require 'net/http'
 require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
+require 'ftools'
 
 require File.join(File.dirname(__FILE__), 'multipart_upload')
 require File.join(File.dirname(__FILE__), 'product_spreadsheet')
