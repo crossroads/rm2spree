@@ -33,8 +33,8 @@ if ! (gem list | grep "bundler"); then gem install bundler -v=$bundler_version -
 # -----------------------------------------------------
 bundle install
 
-# Core FFCRM Specs
+# Run Specs
 # -----------------------------------------------------
-RAILS_ENV=test rake bamboo:spec
+rake bamboo:spec
 
 
