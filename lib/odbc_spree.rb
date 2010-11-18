@@ -135,7 +135,7 @@ module Spree
       def write_yaml_to_file(filename, data_to_write)
         # If the script is running for the first time, (and files dont exist), populate the hash tables with the current data from MYOB RM.
         @log.debug("=== Writing YAML file: \"#{filename}\"...")
-        File.copy(filename, "#{filename}.backup")
+        File.copy(filename, "#{filename}.backup") if File.exists?(filename)
         File.open(filename, "w") do |f|
           f.write(data_to_write.to_yaml)
         end
