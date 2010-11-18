@@ -4,6 +4,9 @@ GEM
     activeresource (2.3.5)
       activesupport (= 2.3.5)
     activesupport (2.3.5)
+    builder (3.0.0)
+    ci_reporter (1.6.2)
+      builder (>= 2.1.2)
     columnize (0.3.1)
     dbd-odbc (0.2.5)
       dbi (>= 0.4.0)
@@ -29,6 +32,7 @@ PLATFORMS
 DEPENDENCIES
   activeresource (= 2.3.5)
   activesupport (= 2.3.5)
+  ci_reporter (= 1.6.2)
   dbd-odbc
   dbi
   google-spreadsheet-ruby (= 0.1.1)

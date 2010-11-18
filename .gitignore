@@ -19,6 +19,7 @@ test_product_uploading.rb
 test_func.rb
 .autotest
 /spec_reports
+spec/reports/
 
 # Development and Resource Folders
 /dev_resources
