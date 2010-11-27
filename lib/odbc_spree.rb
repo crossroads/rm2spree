@@ -579,7 +579,12 @@ and corresponding products might need to be updated.",
         #product_data["shipping_category_id"]
         product_data
       end
-
+      
+      # When updating a product, we don't want to override the 
+      # existing name or description translations.
+      def get_product_data_for_update(stock_id, stock_records)
+        get_product_data(stock_id, stock_records).except("name", "description")
+      end
 
       def add_spree_product(product_data)
         # Cannot add a product without a taxon.
@@ -601,7 +606,7 @@ and corresponding products might need to be updated.",
       def update_spree_product(stock_id, stock_records_new, stock_records_old)
 	      @log.debug("Updating product in web-store with stock_id: #{stock_id}")
 	      update_product = ProductSync.find_by_stock_id(stock_id)
-	      product_data = get_product_data(stock_id, stock_records_new)
+	      product_data = get_product_data_for_update(stock_id, stock_records_new)
 	      cat_id = find_category_by_stockid(stock_id)[:sub_cat]
 	      dept_id = stock_records_new[stock_id]["dept_id"]
 

@@ -164,6 +164,12 @@ describe Spree::ODBC::RM do
       @rm.update_spree_product(1, sample_stock_record, sample_stock_record).should_not == false
     end
 
+    it "should not include name and description when updating a product" do
+      update_data = @rm.get_product_data_for_update(1, sample_stock_record)
+      update_data["name"].should == nil
+      update_data["description"].should == nil
+    end
+
     it "should be able to delete a product from the Spree database" do
       stock_id = 1
       @rm.delete_spree_product(stock_id).should_not == false
