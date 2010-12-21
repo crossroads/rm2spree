@@ -1,7 +1,7 @@
 # Project variables
 # -----------------------------------------------------
+project_name=rm2spree
 ruby_version=1.8.7
-bundler_version=1.0.0
 
 ruby_packages="ruby ruby-devel gcc rubygems"
 cucumber_packages="libxml2 libxml2-devel libxslt libxslt-devel xorg-x11-server-Xvfb firefox ImageMagick"
@@ -24,10 +24,11 @@ fi
 # Install and use the configured ruby version
 # -----------------------------------------------------
 if ! (rvm list | grep $ruby_version); then rvm install $ruby_version; fi;
+
+# Set up and use project gemset for ruby version
 rvm use $ruby_version
-
-if ! (gem list | grep "bundler"); then gem install bundler -v=$bundler_version --no-rdoc --no-ri; fi;
-
+rvm gemset create $project_name
+rvm use $ruby_version@$project_name
 
 # Install Bundle
 # -----------------------------------------------------
@@ -36,5 +37,4 @@ bundle install
 # Run Specs
 # -----------------------------------------------------
 rake bamboo:spec
-
 
