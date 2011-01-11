@@ -530,6 +530,9 @@ and corresponding products might need to be updated.",
               action_count[:ignore] += 1      # If there is an action to do ->
           end
         end
+      rescue StandardError => e
+	      @log.error(":: Error while processing Stock Change: \n#{e}")
+	      return false  
       end
 
       #-------------------------------------------------------
