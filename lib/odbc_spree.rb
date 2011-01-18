@@ -575,7 +575,8 @@ and corresponding products might need to be updated.",
         product_data["price"] = stock_records[stock_id]["sell"]
         product_data["available_on"]  = 1.day.ago
         product_data["meta_description"]  = "stock_id=#{stock_id}"
-        product_data["on_hand"] = stock_records[stock_id]["quantity"]
+        # On hand should be NET quantity (total stock - stock on layby)
+        product_data["on_hand"] = stock_records[stock_id]["quantity"].to_i - stock_records[stock_id]["layby_qty"].to_i 
         weight = stock_records[stock_id]["custom2"].to_f
         weight = (weight > 0 && weight < 10) ? weight : nil     # Valid weights are a numeric value greater than 0 and less than 5 kg.
         product_data["weight"] = weight

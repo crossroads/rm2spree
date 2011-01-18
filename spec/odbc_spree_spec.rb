@@ -116,6 +116,15 @@ describe Spree::ODBC::RM do
     end
   end
 
+  describe "Product data mapping" do
+    it "should use the net quantity of a product" do
+      stock = sample_stock_record.dup
+      stock[1]["quantity"] = 23
+      stock[1]["layby_qty"] = 12
+      @rm.get_product_data(1, stock)["on_hand"].should == 11
+    end
+  end
+
   describe "Spree Active Resource Connection" do
     before :all do   # stub out the product and TaxonSync classes so they dont actually call the spree API
       Taxon = stub("Taxon")
