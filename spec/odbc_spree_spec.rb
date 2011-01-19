@@ -121,7 +121,7 @@ describe Spree::ODBC::RM do
       stock = sample_stock_record.dup
       stock[1]["quantity"] = 23
       stock[1]["layby_qty"] = 12
-      @rm.get_product_data(1, stock)["on_hand"].should == 11
+      @rm.get_product_data(1, stock)["on_hand"].should == 23
     end
   end
 
