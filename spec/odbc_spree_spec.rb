@@ -85,10 +85,15 @@ describe Spree::ODBC::RM do
       errors_for_email = {:subject => "Test email", 1 => {:message => "A category has been deleted. It might need to be removed from the webstore, and corresponding products might need to be updated.",
                  :previous_state => "Test Product",
                  :new_state => "## DELETED"}}
-      email_body = @rm.send_error_email(errors_for_email)
+      email_body = @rm.send_category_error_email(errors_for_email)
       email_body.include?('A category has been deleted.').should == true
       email_body.include?('Test Product').should == true
       email_body.include?('## DELETED').should == true
+    end
+    
+    it "should notify an administrator by email about any errors." do
+      email_body = @rm.send_error_report_email(":: MYOB Database Synchronization Script has finished.")
+      email_body.include?('MYOB Database Synchronization Script has finished').should == true
     end
   end
 

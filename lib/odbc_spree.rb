@@ -532,6 +532,7 @@ and corresponding products might need to be updated.",
         end
       rescue StandardError => e
 	      @log.error(":: Error while processing Stock Change: \n#{e}")
+	      action_count[:error] += 1
 	      return false  
       end
 
@@ -711,7 +712,7 @@ and corresponding products might need to be updated.",
       #                   Error Emails
       #-------------------------------------------------------
 
-      def send_error_email(errors_for_email)
+      def send_category_error_email(errors_for_email)
         @log.debug("Sending error report email to [#{@email_to}]...\n  (#{errors_for_email.size} errors in total.)")
         if @enable_emails
           email_from = @email_user
@@ -735,6 +736,37 @@ and corresponding products might need to be updated.",
           message_body << "\n\nPlease contact the system administrator if you are unable to resolve these conflicts.\nIf there has been a major change to the categories in MYOB, a database remigration may be in order."
 
           @log.debug("-- Email body:\n{{\n#{message_body}\n}}\n")
+
+          message_header = ''
+          message_header << "From: <#{email_from}>\r\n"
+          message_header << "To: <#{@email_to}>\r\n"
+          message_header << "Subject: #{subject}\r\n"
+          message_header << "Date: " + Time.now.to_s + "\r\n"
+          message = message_header + "\r\n" + message_body + "\r\n"
+
+          smtp = Net::SMTP.new(@email_server, @email_port)
+          smtp.enable_starttls
+          smtp.start(@email_helo_domain,
+                     @email_user,
+                     @email_password,
+                     :plain) do |smtp_connection|
+            smtp_connection.send_message message, email_from, @email_to
+          end
+          @log.debug("  - Error report email sent.")
+          return message
+        end
+        rescue StandardError => e
+          @log.error(":: Error report email could not be sent: \n#{e}")
+          return false
+      end
+      
+      def send_error_report_email(body)
+        @log.debug("Sending error report email to [#{@email_to}]...\n)")
+        if @enable_emails
+          email_from = @email_user
+          subject = "MYOB Synchronization warning: Some categories must be manually updated."
+
+          message_body = "The last rm2spree run had some errors:\n\n" << body << "\n\nPlease make sure the system administrator is notified."
 
           message_header = ''
           message_header << "From: <#{email_from}>\r\n"

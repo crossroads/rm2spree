@@ -70,7 +70,7 @@ category_changes[:cat1].each { |id, action|
 @rm.save_categories_data_to_files
 
 # Fire off an error_email if there are any errors.
-send_error_email(errors_for_email) if errors_for_email != {}
+send_category_error_email(errors_for_email) if errors_for_email != {}
 
 
 # --------------------------------------------------------------------
@@ -121,7 +121,7 @@ end
 @rm.save_stock_data_to_files
 
 
-@rm.log.debug(%Q"
+report = %Q"
 
 :: MYOB Database Synchronization Script has finished.
   -- Completed in #{Time.now - start_time} seconds.
@@ -135,5 +135,10 @@ end
      - Uploaded #{action_count[:image]} image(s) to products in the web-store.
      - Ignored #{action_count[:ignore]} product(s) that were not web-store related.
      - There were #{action_count[:error]} total errors.
-")
+"
+
+@rm.log.debug(report)
+
+# Send an error report email if errors were encountered.
+@rm.send_error_report_email(report) if action_count[:error] > 0
 
