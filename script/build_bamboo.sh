@@ -1,7 +1,7 @@
 # Project variables
 # -----------------------------------------------------
 project_name=rm2spree
-ruby_version=1.8.7
+ruby_version=1.8.7-p302
 
 ruby_packages="ruby ruby-devel gcc rubygems"
 cucumber_packages="libxml2 libxml2-devel libxslt libxslt-devel xorg-x11-server-Xvfb firefox ImageMagick"
