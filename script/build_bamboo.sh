@@ -27,8 +27,6 @@ if ! (rvm list | grep $ruby_version); then rvm install $ruby_version; fi;
 
 # Set up and use project gemset for ruby version
 rvm use $ruby_version
-rvm gemset create $project_name
-rvm use $ruby_version@$project_name
 
 # Install Bundle
 # -----------------------------------------------------
