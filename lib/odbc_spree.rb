@@ -54,7 +54,8 @@ module Spree
                     :stock_records_old,
                     :spree_taxonomies,
                     :spree_taxons,
-                    :ignored_stock
+                    :ignored_stock,
+                    :valid_products
 
       def initialize(env, bootstrap = false)
         @env = env
