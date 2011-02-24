@@ -5,7 +5,7 @@ puts "Finding products without translations..."
 require File.join(File.dirname(__FILE__), '..', "lib", "odbc_spree.rb")
 include Spree::ODBC
 
-@rm = RM.new("preview")
+@rm = RM.new("live")
 sheet_products = @rm.valid_products.map(&:upcase)
 @rm.connect
 

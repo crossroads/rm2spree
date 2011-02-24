@@ -5,7 +5,8 @@ source "http://rubygems.org"
 gem "rake"
 
 gem "dbd-odbc"
-gem "dbi"
+# You will need 'ruby-odbc' on windows machines. This provides the odbc.so files.
+gem "dbi", "0.4.5"
 gem "activeresource", "2.3.5"
 gem "activesupport", "2.3.5"
 gem "google-spreadsheet-ruby", "0.1.1"
@@ -14,3 +15,4 @@ gem "google-spreadsheet-ruby", "0.1.1"
 gem "rspec", "1.3.0"
 gem "ci_reporter", "1.6.2"
 gem "ruby-debug"
+
