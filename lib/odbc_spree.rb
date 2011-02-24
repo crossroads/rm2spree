@@ -1,3 +1,5 @@
+VERSION ||= '1.8.7'
+
 require "rubygems"
 gem "dbd-odbc"
 require 'dbi'
@@ -11,7 +13,10 @@ require 'net/http'
 require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
-require 'ftools'
+begin
+  require 'ftools'
+rescue LoadError
+end
 
 require File.join(File.dirname(__FILE__), 'multipart_upload')
 require File.join(File.dirname(__FILE__), 'product_spreadsheet')
@@ -533,7 +538,7 @@ and corresponding products might need to be updated.",
       rescue StandardError => e
 	      @log.error(":: Error while processing Stock Change: \n#{e}")
 	      action_count[:error] += 1
-	      return false  
+	      return false
       end
 
       #-------------------------------------------------------
@@ -584,8 +589,8 @@ and corresponding products might need to be updated.",
         #product_data["shipping_category_id"]
         product_data
       end
-      
-      # When updating a product, we don't want to override the 
+
+      # When updating a product, we don't want to override the
       # existing name or description translations.
       def get_product_data_for_update(stock_id, stock_records)
         get_product_data(stock_id, stock_records).except("name", "description")
@@ -759,7 +764,7 @@ and corresponding products might need to be updated.",
           @log.error(":: Error report email could not be sent: \n#{e}")
           return false
       end
-      
+
       def send_error_report_email(body)
         @log.debug("Sending error report email to [#{@email_to}]...\n)")
         if @enable_emails
