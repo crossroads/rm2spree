@@ -17,8 +17,11 @@ start_time = Time.now
 
 # ------ Begin Code Execution -------
 
-@rm.connect
+# Cache valid google spreadsheet products
+@rm.cache_valid_products
 
+# Connect to ODBC data source and fetch data
+@rm.connect
 @rm.fetch_current_data
 @rm.fetch_old_data
 
@@ -59,12 +62,6 @@ category_changes[:dept].each { |id, action|
 category_changes[:cat1].each { |id, action|
   @rm.process_category_change(id, action, errors_for_email)
 }
-
-
-# Sends a get request to the server,
-# to trigger the 'translate taxons' method.
-######### TaxonSync.find("translate")
-######### (our translations are all handled by google docs now)
 
 # Save the categories data.
 @rm.save_categories_data_to_files
@@ -112,6 +109,16 @@ taxons = {}
 stock_changes.each do |stock_id, stock_action|
   @rm.process_stock_change(stock_id, stock_action, action_count)
 end
+
+
+# If there have been any changes, pull translations from google spreadsheet.
+if action_count[:update] > 0 or action_count[:new] > 0
+  # Sends a get request to the server,
+  # to trigger the 'translate products' method.
+  # (Pulls translations from google spreadsheet.)
+  ProductSync.find("translate")
+end
+
 
 # Remove ignored stock from current records and md5 hashes.
 @rm.remove_ignored_stock

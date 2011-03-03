@@ -13,6 +13,7 @@ config/google_docs_translations.yml
 
 # Logs
 log/*.log*
+*.log
 
 # Testing
 test_product_uploading.rb
@@ -26,3 +27,4 @@ spec/reports/
 /categories_research
 
 .bundle
+

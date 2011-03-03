@@ -96,17 +96,19 @@ module Spree
           end
         end
 
-        # Load valid product barcodes (with proofed
-        # descriptions). If the yaml file doesnt exist,
-        # the script will treat all products as valid.
-        #@valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } || :all rescue :all
-        @valid_products = ProductSpreadsheet.new.valid_products
-
         # An array to store all stock_ids that we ignore,
         # to be removed from the stored_data hashes.
         @ignored_stock = []
 
         connect if @env=="test"
+      end
+
+      def cache_valid_products
+        # Load valid product barcodes (with proofed
+        # descriptions). If the yaml file doesnt exist,
+        # the script will treat all products as valid.
+        #@valid_products = YAML.load_file('config/valid_products.yml').map{|s| s.strip.upcase } || :all rescue :all
+        @valid_products = ProductSpreadsheet.new.valid_products
       end
 
       def logger
