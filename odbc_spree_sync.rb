@@ -116,7 +116,7 @@ if action_count[:update] > 0 or action_count[:new] > 0
   # Sends a get request to the server,
   # to trigger the 'translate products' method.
   # (Pulls translations from google spreadsheet.)
-  ProductSync.find("translate")
+  ProductSync.find("translate") rescue nil
 end
 
 
