@@ -26,7 +26,7 @@ class ProductSpreadsheet
   # -------- Google docs Spreadsheet API ---------
 
   def valid_products
-  
+
     valid_arr = []
 
     puts "== Logging in to google docs with user: '#{@google_username}'..."
@@ -60,8 +60,11 @@ class ProductSpreadsheet
         end
       end
 
+      # Also not valid if translation checked and final review not set.
+      valid = false if sheet[row, 8].blank? or sheet[row, 9].blank?
+
       valid_arr << row_hash[:id] if valid
-      
+
 
       row += 1
 
@@ -73,3 +76,4 @@ class ProductSpreadsheet
   end
 
 end
+
