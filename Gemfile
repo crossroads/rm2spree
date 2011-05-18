@@ -16,3 +16,5 @@ gem "rspec", "1.3.0"
 gem "ci_reporter", "1.6.2"
 gem "ruby-debug"
 
+gem "toadhopper"
+

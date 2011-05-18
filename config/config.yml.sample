@@ -13,11 +13,6 @@ only_images: true
 spree_user: spree@example.com
 spree_password: spree
 
-## For sending error notification emails
-enable_emails: true
-email_server: [SMTP SERVER]
-email_user: [SMTP USER/EMAIL]
-email_password: [SMTP PASSWORD]
-email_port: [SMTP PORT]
-email_helo_domain: [HELO DOMAIN]
-email_to: [SEND EMAILS TO THIS ADDRESS]
+## For hoptoad notifications
+hoptoad_api_key: xxxxxxxxxxxxxxxxxxxxxxxx
+

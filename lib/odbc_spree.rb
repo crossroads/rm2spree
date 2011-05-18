@@ -13,6 +13,8 @@ require 'net/http'
 require 'net/smtp'
 require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7 has smtp_tls baked in
 require 'find'
+require 'toadhopper'
+
 begin
   require 'ftools'
 rescue LoadError
@@ -39,6 +41,9 @@ Logger.class_eval do
     log_error(message)
   end
 end
+
+class UnhandledCategoryUpdate < StandardError; end
+class SyncErrorSummary < StandardError; end
 
 module Spree
   module ODBC
@@ -717,88 +722,39 @@ and corresponding products might need to be updated.",
       end
 
       #-------------------------------------------------------
-      #                   Error Emails
+      #              Hoptoad Error Notifications
       #-------------------------------------------------------
 
-      def send_category_error_email(errors_for_email)
-        @log.debug("Sending error report email to [#{@email_to}]...\n  (#{errors_for_email.size} errors in total.)")
-        if @enable_emails
-          email_from = @email_user
-          subject = "MYOB Synchronization warning: Some categories must be manually updated."
-
-          message_body =
-      %Q"It looks like you have updated some categories in MYOB recently.
-      The Spree web-store synchronization script does not know
-      how to handle this.
-      Please see below for the list of changes:
-
-
-      "
-          errors_for_email.each do |id, error|
-            message_body << "'#{error[:message]}'\n"
-            message_body << "            [ID] : #{id}\n"
-            message_body << "[Previous state] : #{error[:previous_state]}\n"
-            message_body << "     [New state] : #{error[:new_state]}\n\n"
-          end
-
-          message_body << "\n\nPlease contact the system administrator if you are unable to resolve these conflicts.\nIf there has been a major change to the categories in MYOB, a database remigration may be in order."
-
-          @log.debug("-- Email body:\n{{\n#{message_body}\n}}\n")
-
-          message_header = ''
-          message_header << "From: <#{email_from}>\r\n"
-          message_header << "To: <#{@email_to}>\r\n"
-          message_header << "Subject: #{subject}\r\n"
-          message_header << "Date: " + Time.now.to_s + "\r\n"
-          message = message_header + "\r\n" + message_body + "\r\n"
-
-          smtp = Net::SMTP.new(@email_server, @email_port)
-          smtp.enable_starttls
-          smtp.start(@email_helo_domain,
-                     @email_user,
-                     @email_password,
-                     :plain) do |smtp_connection|
-            smtp_connection.send_message message, email_from, @email_to
-          end
-          @log.debug("  - Error report email sent.")
-          return message
+      def send_category_hoptoad_notification(errors_for_email)
+        error_message =
+    %Q"Some categories in MYOB have been updated.
+    The Spree web-store synchronization script does not know
+    how to handle this.
+    Please see below for the list of changes:
+    "
+        errors_for_email.each do |id, error|
+          error_message << "'#{error[:message]}'\n"
+          error_message << "            [ID] : #{id}\n"
+          error_message << "[Previous state] : #{error[:previous_state]}\n"
+          error_message << "     [New state] : #{error[:new_state]}\n\n"
         end
-        rescue StandardError => e
-          @log.error(":: Error report email could not be sent: \n#{e}")
-          return false
+
+        error_message << "\n\nIf there has been a major change to the categories in MYOB, a database remigration may be required."
+
+        @log.debug("-- Notifying Hoptoad:\n{{\n#{error_message}\n}}\n")
+
+        Toadhopper(@hoptoad_api_key).post!(UnhandledCategoryUpdate.new(error_message), :message => error_message)
+        return error_message
       end
 
-      def send_error_report_email(body)
-        @log.debug("Sending error report email to [#{@email_to}]...\n)")
-        if @enable_emails
-          email_from = @email_user
-          subject = "MYOB Synchronization warning: Some categories must be manually updated."
+      def send_hoptoad_notification(body)
+        error_message = "The last rm2spree run had some errors:\n\n" << body
 
-          message_body = "The last rm2spree run had some errors:\n\n" << body << "\n\nPlease make sure the system administrator is notified."
+        @log.debug("-- Notifying Hoptoad:\n{{\n#{error_message}\n}}\n")
 
-          message_header = ''
-          message_header << "From: <#{email_from}>\r\n"
-          message_header << "To: <#{@email_to}>\r\n"
-          message_header << "Subject: #{subject}\r\n"
-          message_header << "Date: " + Time.now.to_s + "\r\n"
-          message = message_header + "\r\n" + message_body + "\r\n"
-
-          smtp = Net::SMTP.new(@email_server, @email_port)
-          smtp.enable_starttls
-          smtp.start(@email_helo_domain,
-                     @email_user,
-                     @email_password,
-                     :plain) do |smtp_connection|
-            smtp_connection.send_message message, email_from, @email_to
-          end
-          @log.debug("  - Error report email sent.")
-          return message
-        end
-        rescue StandardError => e
-          @log.error(":: Error report email could not be sent: \n#{e}")
-          return false
+        Toadhopper(@hoptoad_api_key).post!(SyncErrorSummary.new, :environment => {:full_error_message => error_message})
+        return error_message
       end
-
     end
   end
 end
