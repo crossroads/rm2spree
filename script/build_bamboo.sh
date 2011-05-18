@@ -54,5 +54,5 @@ bundle install
 
 # Run Specs
 # -----------------------------------------------------
-bundle exec rake bamboo:spec
+rake bamboo:spec
 
