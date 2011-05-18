@@ -81,19 +81,19 @@ describe Spree::ODBC::RM do
       Net::SMTP.stub!(:new).and_return(MockSMTP.new)
     end
 
-    it "should notify an administrator by email about deleted categories." do
-      errors_for_email = {:subject => "Test email", 1 => {:message => "A category has been deleted. It might need to be removed from the webstore, and corresponding products might need to be updated.",
+    it "should send hoptoad notification about deleted categories." do
+      error_message = {:subject => "Test email", 1 => {:message => "A category has been deleted. It might need to be removed from the webstore, and corresponding products might need to be updated.",
                  :previous_state => "Test Product",
                  :new_state => "## DELETED"}}
-      email_body = @rm.send_category_error_email(errors_for_email)
-      email_body.include?('A category has been deleted.').should == true
-      email_body.include?('Test Product').should == true
-      email_body.include?('## DELETED').should == true
+      msg = @rm.send_category_hoptoad_notification(error_message)
+      msg.include?('A category has been deleted.').should == true
+      msg.include?('Test Product').should == true
+      msg.include?('## DELETED').should == true
     end
-    
-    it "should notify an administrator by email about any errors." do
-      email_body = @rm.send_error_report_email(":: MYOB Database Synchronization Script has finished.")
-      email_body.include?('MYOB Database Synchronization Script has finished').should == true
+
+    it "should send hoptoad notification with error summary." do
+      msg = @rm.send_hoptoad_notification(":: MYOB Database Synchronization Script has finished.")
+      msg.include?('MYOB Database Synchronization Script has finished').should == true
     end
   end
 
@@ -136,13 +136,13 @@ describe Spree::ODBC::RM do
       @rm.categories_current = sample_full_categories
     end
 
-    before :each do      
+    before :each do
       Product.stub!(:attributes).and_return(sample_spree_record)
       Product.stub!(:valid?).and_return(true)
       Product.stub!(:deleted_at=).and_return(Time.now)
       Product.stub!(:save).and_return(true)
       Product.stub!(:permalink).and_return("test_product")
-      
+
       Taxon.stub!(:save).and_return(true)
       ProductSync.stub!(:find).and_return([Product])
       ProductSync.stub!(:new).and_return(Product)
