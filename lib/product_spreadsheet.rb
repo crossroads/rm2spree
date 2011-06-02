@@ -61,7 +61,7 @@ class ProductSpreadsheet
       end
 
       # Also not valid if translation checked and final review not set.
-      valid = false if sheet[row, 8].blank? or sheet[row, 9].blank?
+      # valid = false if sheet[row, 8].blank? or sheet[row, 9].blank?
 
       valid_arr << row_hash[:id] if valid
 
