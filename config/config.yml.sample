@@ -15,4 +15,5 @@ spree_password: spree
 
 ## For hoptoad notifications
 hoptoad_api_key: xxxxxxxxxxxxxxxxxxxxxxxx
+hoptoad_host: https://errbit.crossroads.org.hk
 

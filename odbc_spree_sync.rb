@@ -153,6 +153,6 @@ begin
 rescue Exception => ex
   require 'toadhopper'
   config = YAML.load_file(File.join("config", "config_#{env}.yml"))
-  Toadhopper(config["hoptoad_api_key"]).post!(ex)
+  Toadhopper(config["hoptoad_api_key"], :notify_host => (config["hoptoad_host"])).post!(ex)
 end
 
