@@ -15,6 +15,8 @@ require 'smtp_tls' if VERSION =~ /1.8.6/ # Run ruby 1.8.6 on Windows, ruby 1.8.7
 require 'find'
 require 'toadhopper'
 
+require File.join(File.dirname(__FILE__), 'toadhopper_ssl')
+
 begin
   require 'ftools'
 rescue LoadError
