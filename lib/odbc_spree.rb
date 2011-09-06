@@ -744,7 +744,7 @@ and corresponding products might need to be updated.",
         @log.debug("-- Notifying Hoptoad:\n{{\n#{error_message}\n}}\n")
 
         if @hoptoad_api_key
-          Toadhopper(@hoptoad_api_key, :notify_host => @hoptoad_host).
+          Toadhopper.new(@hoptoad_api_key, :notify_host => @hoptoad_host).
             post!(UnhandledCategoryUpdate.new(error_message), :message => error_message)
         end
         return error_message
@@ -756,7 +756,7 @@ and corresponding products might need to be updated.",
         @log.debug("-- Notifying Hoptoad:\n{{\n#{error_message}\n}}\n")
 
         if @hoptoad_api_key
-          Toadhopper(@hoptoad_api_key, :notify_host => @hoptoad_host).
+          Toadhopper.new(@hoptoad_api_key, :notify_host => @hoptoad_host).
             post!(SyncErrorSummary.new, :environment => {:full_error_message => error_message})
         end
         return error_message
