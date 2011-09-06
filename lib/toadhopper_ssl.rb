@@ -19,7 +19,7 @@ Toadhopper.class_eval do
 
     req = Net::HTTP::Post.new(url.path)
     req.set_form_data(params, ';')
-    res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
+    res = http.request(req)
 
     parse_response(res)
   end
