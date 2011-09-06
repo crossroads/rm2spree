@@ -26,7 +26,7 @@ GEM
       ruby-debug-base (~> 0.10.3.0)
     ruby-debug-base (0.10.3)
       linecache (>= 0.3)
-    toadhopper (1.2)
+    toadhopper (2.0)
 
 PLATFORMS
   ruby
