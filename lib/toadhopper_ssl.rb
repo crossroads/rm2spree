@@ -16,10 +16,12 @@ Toadhopper.class_eval do
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
-    headers = {'Content-Type'=> 'application/x-www-form-urlencoded'}
-    resp, data = http.post(url.path, params, headers)
 
-    parse_response(resp)
+    req = Net::HTTP::Post.new(url.path)
+    req.set_form_data(params, ';')
+    res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
+
+    parse_response(res)
   end
 
 
